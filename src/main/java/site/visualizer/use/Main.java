@@ -1,4 +1,4 @@
-package site.visualizer.user;
+package site.visualizer.use;
 
 import java.util.ArrayList;
 

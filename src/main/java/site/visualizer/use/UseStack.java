@@ -1,4 +1,4 @@
-package site.visualizer.user;
+package site.visualizer.use;
 
 import site.visualizer.model.structure.stack.AdvSyncStack;
 import site.visualizer.model.structure.stack.BasicStack;
@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class UseBasicStack {
+public class UseStack {
     private static final Scanner scan = new Scanner(System.in);
 
     private static int toProduce;
@@ -57,56 +57,8 @@ public class UseBasicStack {
                 System.exit(1);
         }
 
-        if (toProduce % producerCount == 0) {
-
-        }
-
-        AtomicInteger producedCount = new AtomicInteger();
-        AtomicInteger consumedCount = new AtomicInteger();
-
-        Runnable produce = () -> {
-            while (producedCount.get() < toProduce) {
-                try {
-                    var brick = new Brick();
-                    stack.push(brick);
-                    producedCount.getAndIncrement();
-                    System.out.println(Thread.currentThread().getName() + " added brick");
-                    System.out.println("stack size " + stack.size());
-                } catch (IllegalStateException e) {
-                    System.out.println("tried to push when full");
-                } catch (InterruptedException e) {
-                    System.out.println(e.getMessage());
-                }
-
-            }
-        };
-
-        Runnable consume = () -> {
-            while (consumedCount.get() < toConsume) {
-                try {
-                    stack.pop();
-                    consumedCount.getAndIncrement();
-                    System.out.println(Thread.currentThread().getName() + " removed brick");
-                    System.out.println("stack size " + stack.size());
-                } catch (NoSuchElementException e) {
-                    System.out.println("tried to pop when empty");
-                } catch (InterruptedException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        };
-
-        Thread[] producers = new Thread[producerCount];
-        Thread[] consumers = new Thread[consumerCount];
-
-        for (int i=0; i<producerCount; i++) {
-            producers[i] = new Thread(produce, "Producer "+i);
-        }
-
-        for (int i=0; i<consumerCount; i++) {
-            consumers[i] = new Thread(consume, "Consumer "+i);
-        }
-
+        Thread[] producers = getProducerThreadPool();
+        Thread[] consumers = getConsumerThreadPool();
 
         var start = System.currentTimeMillis();
 
@@ -120,9 +72,72 @@ public class UseBasicStack {
         var end = System.currentTimeMillis();
         var totalTime = end-start;
 
-        System.out.println("total produced: "+producedCount);
-        System.out.println("total consumed: "+consumedCount);
         System.out.println("stack size: "+stack.size());
         System.out.println("Runtime: "+totalTime+" ms");
     }
+
+    private static Runnable getProducerRunnable(int quota) {
+        return () -> {
+            for (int i=0; i<quota; i++) {
+                try {
+                    var brick = new Brick();
+                    stack.push(brick);
+                    System.out.println(Thread.currentThread().getName() + " added brick");
+                    System.out.println("stack size " + stack.size());
+                } catch (IllegalStateException e) {
+                    System.out.println("tried to push when full");
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        };
+    }
+
+    private static Runnable getConsumerRunnable(int quota) {
+        return () -> {
+            for (int i=0; i<quota; i++) {
+                try {
+                    stack.pop();
+                    System.out.println(Thread.currentThread().getName() + " removed brick");
+                    System.out.println("stack size " + stack.size());
+                } catch (NoSuchElementException e) {
+                    System.out.println("tried to pop when empty");
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        };
+    }
+
+    private static Thread[] getProducerThreadPool() {
+        Thread[] pool = new Thread[producerCount];
+
+        int baseForProducers = toProduce / producerCount;
+        int extraForProducers = toProduce % producerCount;
+
+        for (int i=0; i<producerCount; i++) {
+            int quota = baseForProducers;
+            if (i < extraForProducers) quota += extraForProducers;
+
+            pool[i] = new Thread(getProducerRunnable(quota), "Producer "+i);
+        }
+
+        return pool;
+    };
+
+    private static Thread[] getConsumerThreadPool() {
+        Thread[] pool = new Thread[consumerCount];
+
+        int baseForConsumers = toConsume / consumerCount;
+        int extraForConsumers = toConsume % consumerCount;
+
+        for (int i=0; i<consumerCount; i++) {
+            int quota = baseForConsumers;
+            if (i < extraForConsumers) quota += extraForConsumers;
+
+            pool[i] = new Thread(getConsumerRunnable(quota), "Consumer "+i);
+        }
+
+        return pool;
+    };
 }
