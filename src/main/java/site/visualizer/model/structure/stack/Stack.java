@@ -1,0 +1,7 @@
+package site.visualizer.model.structure.stack;
+
+public interface Stack<T> {
+    public T pop() throws InterruptedException;
+    public void push(T val) throws InterruptedException;
+    public int size();
+}
