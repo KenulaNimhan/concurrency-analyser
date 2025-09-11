@@ -5,8 +5,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LockBasedStack<T> implements Stack<T>{
-    // actual size of the stack - number of elements
-    private int size;
+    private int size; // actual size of the stack - number of elements
     private final T[] array;
 
     // defining locks and conditions
