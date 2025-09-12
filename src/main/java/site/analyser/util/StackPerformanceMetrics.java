@@ -3,14 +3,15 @@ package site.analyser.util;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class StackPerformanceMetrics<T> {
+public class StackPerformanceMetrics {
     private final String stackName;
     private final AtomicInteger producedCount;
     private final AtomicInteger consumedCount;
     private long totalTime;
     private final List<Long> latencies = Collections.synchronizedList(new ArrayList<>());
-    private final List<T> producedData = Collections.synchronizedList(new ArrayList<>());
-    private final List<T> consumedData = Collections.synchronizedList(new ArrayList<>());
+    private final List<Element> producedData = Collections.synchronizedList(new ArrayList<>());
+    private final List<Element> consumedData = Collections.synchronizedList(new ArrayList<>());
+    private final AtomicInteger errorCount = new AtomicInteger();
 
 
     public StackPerformanceMetrics(String name) {
@@ -23,9 +24,15 @@ public class StackPerformanceMetrics<T> {
         return stackName;
     }
 
+    public List<Element> getConsumedData() {
+        return consumedData;
+    }
+
     public void setTotalTime(long time) {
         this.totalTime = time;
     }
+
+    public void incrementErrorCount() {errorCount.getAndIncrement();}
 
     public void incrementProducedCount() {
         producedCount.getAndIncrement();
@@ -52,26 +59,52 @@ public class StackPerformanceMetrics<T> {
         return total/latencies.size();
     }
 
-    public void addToProducedData(T val) {
+    public void addToProducedData(Element val) {
         producedData.addLast(val);
     }
 
-    public void addToConsumedData(T val) {
+    public void addToConsumedData(Element val) {
         consumedData.addLast(val);
     }
 
-    private boolean hasDuplicates(List<T> list) {
-        Set<T> set = new HashSet<>();
-        for (T val: list) {
+    private String hasDuplicates(List<Element> list) throws Exception {
+        if (list.isEmpty()) return "empty list";
+        Set<Element> set = new HashSet<>();
+        for (Element val: list) {
             if (!set.add(val)) {
-                return true;
+                return String.valueOf(true);
             }
         }
-        return false;
+        return String.valueOf(false);
+    }
+
+    public String printProducedData() {
+        String data = "";
+        for (Element val: producedData) {
+            data = data.concat(String.valueOf(val.getUniqueID()));
+        }
+        return data;
+    }
+
+    public String printConsumedData() {
+        String data = "";
+        for (Element val: consumedData) {
+            data = data.concat(String.valueOf(val.getUniqueID()));
+        }
+        return data;
     }
 
     public boolean consumeAmountEqualsProduced() {
         return consumedCount.get() == producedCount.get();
+    }
+
+    public boolean isLifo() throws Exception {
+        if (hasDuplicates(producedData).equals("true")) throw new Exception("produced data contains duplicates");
+        if (hasDuplicates(consumedData).equals("true")) throw new Exception("consumed data contains duplicates");
+        for (int i=0; i<producedData.size(); i++) {
+            if (!consumedData.reversed().get(i).getUniqueID().equals(producedData.get(i).getUniqueID())) return false;
+        }
+        return true;
     }
 
     @Override
@@ -83,9 +116,10 @@ public class StackPerformanceMetrics<T> {
                     Structure : %s
                     
                     --CORRECTNESS--
+                    error count                          : %s
                     produced count equals consumed count : %b
-                    produced data contains duplicates    : %b
-                    consumed data contains duplicates    : %b
+                    produced data contains duplicates    : %s
+                    consumed data contains duplicates    : %s
                     
                     --THROUGHPUT--
                     total time  :   %s ms
@@ -97,6 +131,7 @@ public class StackPerformanceMetrics<T> {
                     ---------------------------------------------
                     """,
                     getStackName(),
+                    errorCount.get(),
                     consumeAmountEqualsProduced(),
                     hasDuplicates(producedData),
                     hasDuplicates(consumedData),
