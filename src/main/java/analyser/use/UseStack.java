@@ -3,20 +3,22 @@ package analyser.use;
 import analyser.config.Configurable;
 import analyser.config.Configurator;
 import analyser.structure.stack.*;
-import analyser.structure.stack.Stack;
-import analyser.util.*;
+import analyser.util.Element;
+import analyser.util.StackPerformanceMetrics;
+import analyser.util.ThreadType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class UseStack {
     private static final Configurator configurator = new Configurator();
     private static Configurable testData = new Configurable();
 
     private static final StackPerformanceMetrics basicStackMetrics = new StackPerformanceMetrics("Basic Stack");
-    private static final StackPerformanceMetrics basicSyncStackMetrics = new StackPerformanceMetrics("Basic Sync Stack");
+    private static final StackPerformanceMetrics basicSyncStackMetrics = new StackPerformanceMetrics("Naive Sync Stack");
     private static final StackPerformanceMetrics syncStackMetrics = new StackPerformanceMetrics("Synchronised Stack");
     private static final StackPerformanceMetrics lockStackMetrics = new StackPerformanceMetrics("Lock Based Stack");
-
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -45,18 +47,21 @@ public class UseStack {
 
     private static void runThreads(Stack<Element> stack, StackPerformanceMetrics metrics) throws InterruptedException {
         // process for sync stack
-        Thread[] producersForSyncStack = getConfiguredThreadPool(
+        Thread[] producerThreads = getConfiguredThreadPool(
                 ThreadType.PRODUCER, stack,metrics);
-        Thread[] consumersForSyncStack = getConfiguredThreadPool(
+        Thread[] consumerThreads = getConfiguredThreadPool(
                 ThreadType.CONSUMER, stack,metrics);
+
+        List<Thread> allThreads = new ArrayList<>();
+        Collections.addAll(allThreads, producerThreads);
+        Collections.addAll(allThreads, consumerThreads);
+        Collections.shuffle(allThreads);
 
         var start = System.nanoTime();
         // starting
-        for (Thread producer: producersForSyncStack) producer.start();
-        for (Thread consumer: consumersForSyncStack) consumer.start();
+        for (Thread thread: allThreads) thread.start();
         // joining
-        for (Thread producer: producersForSyncStack) producer.join();
-        for (Thread consumer: consumersForSyncStack) consumer.join();
+        for (Thread thread: allThreads) thread.join();
         var end = System.nanoTime();
 
         metrics.setTotalTime((end-start) / 1_000_000);

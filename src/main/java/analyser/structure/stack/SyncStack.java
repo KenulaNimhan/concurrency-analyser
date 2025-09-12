@@ -22,13 +22,13 @@ public class SyncStack<T> implements Stack<T>{
         return this.size;
     }
 
-    public synchronized void push(T val) throws InterruptedException{
+    public synchronized void push(T val){
         if (size == array.length) throw new IllegalStateException("Cannot push. stack is full.");
         array[size] = val;
         size++;
     }
 
-    public synchronized T pop() throws InterruptedException {
+    public synchronized T pop() {
         if (this.isEmpty()) throw new NoSuchElementException("Cannot pop. stack empty.");
         var valToReturn = array[size-1];
         array[size-1] = null;

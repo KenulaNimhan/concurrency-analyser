@@ -6,6 +6,8 @@ public class Configurable {
     private int producerCount;
     private int consumerCount;
     private int cap;
+    private int elementSize;
+    private int operationalScale;
 
     public Configurable() {}
 
@@ -28,6 +30,14 @@ public class Configurable {
 
     public int getCap() {
         return cap;
+    }
+
+    public int getElementSize() {
+        return elementSize;
+    }
+
+    public int getOperationalScale() {
+        return operationalScale;
     }
 
     // SETTERS
@@ -54,6 +64,16 @@ public class Configurable {
 
     public Configurable setCap(int cap) {
         this.cap = cap;
+        return this;
+    }
+
+    public Configurable setElementSize(int elementSize) {
+        this.elementSize = elementSize;
+        return this;
+    }
+
+    public Configurable setOperationalScale(int operationalScale) {
+        this.operationalScale = operationalScale;
         return this;
     }
 }

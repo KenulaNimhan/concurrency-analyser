@@ -16,12 +16,18 @@ public class Configurator {
         var consumerCount = scan.nextInt();
         System.out.print("max no. of elements the data structure can hold: ");
         var stackHeight = scan.nextInt();
+        System.out.println("estimated size of the object that is being stacked or queued (in bytes): ");
+        var elementSize = scan.nextInt();
+        System.out.println("estimated scale of operations that would be performed in each iteration: ");
+        var operationalScale = scan.nextInt();
 
         testData.setCap(stackHeight)
                 .setToProduce(toProduce)
                 .setToConsume(toProduce)
                 .setProducerCount(producerCount)
-                .setConsumerCount(consumerCount);
+                .setConsumerCount(consumerCount)
+                .setElementSize(elementSize)
+                .setOperationalScale(operationalScale);
 
         return testData;
     }

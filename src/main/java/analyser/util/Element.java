@@ -2,7 +2,7 @@ package analyser.util;
 
 import java.util.UUID;
 
-// mimics a brick help to visualize stacking concept.
+// configurable unique element
 public class Element {
     private final UUID uniqueID;
     private final String createdBy;
