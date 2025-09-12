@@ -12,6 +12,10 @@ public class Element {
         this.createdBy = Thread.currentThread().getName();
     }
 
+    public UUID getUniqueID() {
+        return uniqueID;
+    }
+
     @Override
     public String toString() {
         return uniqueID+" by "+createdBy;
