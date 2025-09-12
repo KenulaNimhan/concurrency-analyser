@@ -1,4 +1,4 @@
-package site.analyser.structure.stack;
+package analyser.structure.stack;
 
 import java.util.Arrays;
 

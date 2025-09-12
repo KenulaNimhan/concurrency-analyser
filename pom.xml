@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>site</groupId>
-	<artifactId>visualizer</artifactId>
+	<artifactId>concurrencyAnalyser</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>concurrencyVisualizer</name>
 	<description>Concurrency Visualizer</description>

@@ -1,4 +1,4 @@
-package site.analyser.util;
+package analyser.config;
 
 public class Configurable {
     private int toProduce;

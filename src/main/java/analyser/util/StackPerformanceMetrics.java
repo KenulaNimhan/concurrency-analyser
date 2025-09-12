@@ -1,4 +1,4 @@
-package site.analyser.util;
+package analyser.util;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

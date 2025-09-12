@@ -1,6 +1,6 @@
-package site.analyser.model.stack;
+package analyser.model.stack;
 import org.junit.jupiter.api.Test;
-import site.analyser.structure.stack.BasicStack;
+import analyser.structure.stack.BasicStack;
 
 import java.util.NoSuchElementException;
 

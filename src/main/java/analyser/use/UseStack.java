@@ -1,17 +1,16 @@
-package site.analyser.use;
+package analyser.use;
 
-import site.analyser.structure.stack.*;
-import site.analyser.structure.stack.Stack;
-import site.analyser.util.StackPerformanceMetrics;
-import site.analyser.util.Configurable;
-import site.analyser.util.ThreadType;
-import site.analyser.util.Element;
+import analyser.config.Configurable;
+import analyser.config.Configurator;
+import analyser.structure.stack.*;
+import analyser.structure.stack.Stack;
+import analyser.util.*;
 
 import java.util.*;
 
 public class UseStack {
-    private static final Scanner scan = new Scanner(System.in);
-    private static final Configurable testData = new Configurable();
+    private static final Configurator configurator = new Configurator();
+    private static Configurable testData = new Configurable();
 
     private static final StackPerformanceMetrics basicStackMetrics = new StackPerformanceMetrics("Basic Stack");
     private static final StackPerformanceMetrics basicSyncStackMetrics = new StackPerformanceMetrics("Basic Sync Stack");
@@ -21,33 +20,22 @@ public class UseStack {
 
     public static void main(String[] args) throws InterruptedException {
 
-        // gathering input from user to configure
-        System.out.print("how many items needed to be produced & consumed: ");
-        var toProduce = scan.nextInt();
-        System.out.print("how many producer threads: ");
-        var producerCount = scan.nextInt();
-        System.out.print("how many consumer threads: ");
-        var consumerCount = scan.nextInt();
-        System.out.print("max no. of elements the data structure can hold: ");
-        var stackHeight = scan.nextInt();
+        // configuring test data
+        testData = configurator.configure();
 
-        testData.setCap(stackHeight)
-                .setToProduce(toProduce)
-                .setToConsume(toProduce)
-                .setProducerCount(producerCount)
-                .setConsumerCount(consumerCount);
-
-        // test stacks
+        // creating stacks to test
         BasicStack<Element> basicStack = new BasicStack<>(testData.getCap());
         SyncStack<Element> basicSyncStack = new SyncStack<>(testData.getCap());
         AdvSyncStack<Element> syncStack = new AdvSyncStack<>(testData.getCap());
         LockBasedStack<Element> lockBasedStack = new LockBasedStack<>(testData.getCap());
 
+        // running the configured scenarios for each stack and collecting metrics
         runThreads(basicStack, basicStackMetrics);
         runThreads(basicSyncStack, basicSyncStackMetrics);
         runThreads(syncStack, syncStackMetrics);
         runThreads(lockBasedStack, lockStackMetrics);
 
+        // display metrics
         System.out.println(basicStackMetrics);
         System.out.println(basicSyncStackMetrics);
         System.out.println(syncStackMetrics);

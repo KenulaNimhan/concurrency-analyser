@@ -1,9 +1,9 @@
-package site.analyser;
+package analyser;
 
 import org.junit.jupiter.api.Test;
-import site.analyser.structure.stack.AdvSyncStack;
-import site.analyser.util.Element;
-import site.analyser.util.StackPerformanceMetrics;
+import analyser.structure.stack.AdvSyncStack;
+import analyser.util.Element;
+import analyser.util.StackPerformanceMetrics;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
