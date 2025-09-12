@@ -1,4 +1,4 @@
-package site.visualizer.model.structure.stack;
+package site.analyser.structure.stack;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;

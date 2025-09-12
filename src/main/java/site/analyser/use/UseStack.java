@@ -1,12 +1,12 @@
-package site.visualizer.use;
+package site.analyser.use;
 
-import site.visualizer.StackPerformanceMetrics;
-import site.visualizer.model.Configurable;
-import site.visualizer.model.ThreadType;
-import site.visualizer.model.structure.stack.AdvSyncStack;
-import site.visualizer.model.structure.stack.LockBasedStack;
-import site.visualizer.model.structure.stack.Stack;
-import site.visualizer.model.type.Element;
+import site.analyser.util.StackPerformanceMetrics;
+import site.analyser.util.Configurable;
+import site.analyser.util.ThreadType;
+import site.analyser.structure.stack.AdvSyncStack;
+import site.analyser.structure.stack.LockBasedStack;
+import site.analyser.structure.stack.Stack;
+import site.analyser.util.Element;
 
 import java.util.*;
 
@@ -48,7 +48,7 @@ public class UseStack {
 
     }
 
-    private static <T> void runThreads(Stack<Element> stack, StackPerformanceMetrics<Element> metrics) throws InterruptedException {
+    private static void runThreads(Stack<Element> stack, StackPerformanceMetrics<Element> metrics) throws InterruptedException {
         // process for sync stack
         Thread[] producersForSyncStack = getConfiguredThreadPool(
                 ThreadType.PRODUCER, stack,metrics);
@@ -87,7 +87,7 @@ public class UseStack {
         };
     }
 
-    private static <T> Runnable getConsumerRunnable(int quota, Stack<T> stack, StackPerformanceMetrics<T> metrics) {
+    private static Runnable getConsumerRunnable(int quota, Stack<Element> stack, StackPerformanceMetrics<Element> metrics) {
         return () -> {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
@@ -105,7 +105,7 @@ public class UseStack {
         };
     }
 
-    private static <T> Thread[] getConfiguredThreadPool(
+    private static Thread[] getConfiguredThreadPool(
             ThreadType threadType,
             Stack<Element> stack,
             StackPerformanceMetrics<Element> metrics

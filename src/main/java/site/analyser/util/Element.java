@@ -1,4 +1,4 @@
-package site.visualizer.model.type;
+package site.analyser.util;
 
 import java.util.UUID;
 

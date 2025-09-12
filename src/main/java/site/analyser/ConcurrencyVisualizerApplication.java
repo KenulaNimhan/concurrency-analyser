@@ -1,4 +1,4 @@
-package site.visualizer;
+package site.analyser;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

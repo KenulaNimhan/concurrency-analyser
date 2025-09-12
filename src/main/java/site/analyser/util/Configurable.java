@@ -1,4 +1,4 @@
-package site.visualizer.model;
+package site.analyser.util;
 
 public class Configurable {
     private int toProduce;
