@@ -1,22 +1,15 @@
 package site.visualizer.model.structure.stack;
 
-
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 
 public class AdvSyncStack<T> implements Stack<T>{
-    // actual size of the stack - number of elements
-    private int size;
+    private int size; // actual size of the stack - number of elements
     private final T[] array;
 
     @SuppressWarnings("unchecked")
     public AdvSyncStack(int capacity) {
         size = 0;
         array = (T[]) new Object[capacity];
-    }
-
-    public int cap() {
-        return this.array.length;
     }
 
     public int size() {
@@ -43,11 +36,6 @@ public class AdvSyncStack<T> implements Stack<T>{
 
         notifyAll();
         return valToReturn;
-    }
-
-    public T peek() {
-        if (this.isEmpty()) throw new NoSuchElementException("stack is empty. no element to peek.");
-        return array[size-1];
     }
 
     public boolean isEmpty() {

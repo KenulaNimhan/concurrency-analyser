@@ -1,6 +1,6 @@
 package site.visualizer.model.structure.stack;
 
-import java.util.NoSuchElementException;
+import java.util.Arrays;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,10 +17,6 @@ public class LockBasedStack<T> implements Stack<T>{
     public LockBasedStack(int capacity) {
         size = 0;
         array = (T[]) new Object[capacity];
-    }
-
-    public int cap() {
-        return this.array.length;
     }
 
     public int size() {
@@ -62,12 +58,12 @@ public class LockBasedStack<T> implements Stack<T>{
         }
     }
 
-    public T peek() {
-        if (this.isEmpty()) throw new NoSuchElementException("stack is empty. no element to peek.");
-        return array[size-1];
-    }
-
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(array);
     }
 }
