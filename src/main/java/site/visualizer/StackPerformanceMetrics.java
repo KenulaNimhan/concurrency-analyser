@@ -35,8 +35,8 @@ public class StackPerformanceMetrics<T> {
         consumedCount.getAndIncrement();
     }
 
-    public long calculateThroughput() {
-        return (producedCount.get() + consumedCount.get()) / totalTime;
+    public double calculateThroughput() {
+        return (producedCount.get() + consumedCount.get()) / (double) totalTime;
     }
 
     public void addLatency(long val) {
@@ -45,10 +45,10 @@ public class StackPerformanceMetrics<T> {
 
     public double getAvgLatency() {
         double total =0;
-        Collections.sort(latencies);
         for (Long val: latencies) {
             total += val;
         }
+        total = total / 1_000_000;
         return total/latencies.size();
     }
 
@@ -70,39 +70,8 @@ public class StackPerformanceMetrics<T> {
         return false;
     }
 
-    public String printProducedData() {
-        String data = "";
-        for (T val: producedData) {
-            data = data.concat(val.toString()+" ");
-        }
-        return data;
-    }
-
-    public String printConsumedData() {
-        String data = "";
-        for (T val: consumedData) {
-            data = data.concat(val.toString()+" ");
-        }
-        return data;
-    }
-
-    public boolean consumedDataEqualsProducedData() {
-        return consumedData.size() == producedData.size();
-    }
-
     public boolean consumeAmountEqualsProduced() {
         return consumedCount.get() == producedCount.get();
-    }
-
-    public boolean isLifo() throws Exception {
-        if (!consumeAmountEqualsProduced()) throw new Exception("produced count and consumed count does not match");
-        if (!consumedDataEqualsProducedData()) throw new Exception("produced data and consumed data differs");
-        if (hasDuplicates(producedData)) throw new Exception("produced data contains duplicates");
-        if (hasDuplicates(consumedData)) throw new Exception("consumed data contains duplicates");
-        for (int i=0; i<producedCount.get(); i++) {
-            if (consumedData.reversed().get(i) != producedData.get(i)) return false;
-        }
-        return true;
     }
 
     @Override
@@ -120,10 +89,10 @@ public class StackPerformanceMetrics<T> {
                     
                     --THROUGHPUT--
                     total time  :   %s ms
-                    throughput  :   %s ops/ms
+                    throughput  :   %.4f ops/ms
                     
                     --LATENCY--
-                    avg latency :   %s ns/ops
+                    avg latency :   %.4f ms/ops
                     
                     ---------------------------------------------
                     """,

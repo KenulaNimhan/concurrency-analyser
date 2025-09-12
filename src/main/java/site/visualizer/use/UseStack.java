@@ -6,20 +6,16 @@ import site.visualizer.model.ThreadType;
 import site.visualizer.model.structure.stack.AdvSyncStack;
 import site.visualizer.model.structure.stack.LockBasedStack;
 import site.visualizer.model.structure.stack.Stack;
-import site.visualizer.model.type.Brick;
+import site.visualizer.model.type.Element;
 
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class UseStack {
     private static final Scanner scan = new Scanner(System.in);
     private static final Configurable testData = new Configurable();
 
-    private static final ReentrantLock prodLock = new ReentrantLock();
-    private static final ReentrantLock conLock = new ReentrantLock();
-
-    private static final StackPerformanceMetrics<Brick> syncStackMetrics = new StackPerformanceMetrics<>("Synchronised Stack");
-    private static final StackPerformanceMetrics<Brick> lockStackMetrics = new StackPerformanceMetrics<>("Lock Based Stack");
+    private static final StackPerformanceMetrics<Element> syncStackMetrics = new StackPerformanceMetrics<>("Synchronised Stack");
+    private static final StackPerformanceMetrics<Element> lockStackMetrics = new StackPerformanceMetrics<>("Lock Based Stack");
 
 
     public static void main(String[] args) throws InterruptedException {
@@ -41,8 +37,8 @@ public class UseStack {
                 .setConsumerCount(consumerCount);
 
         // test stacks
-        AdvSyncStack<Brick> syncStack = new AdvSyncStack<>(testData.getCap());
-        LockBasedStack<Brick> lockBasedStack = new LockBasedStack<>(testData.getCap());
+        AdvSyncStack<Element> syncStack = new AdvSyncStack<>(testData.getCap());
+        LockBasedStack<Element> lockBasedStack = new LockBasedStack<>(testData.getCap());
 
         runThreads(syncStack, syncStackMetrics);
         runThreads(lockBasedStack, lockStackMetrics);
@@ -52,7 +48,7 @@ public class UseStack {
 
     }
 
-    private static <T> void runThreads(Stack<T> stack, StackPerformanceMetrics<T> metrics) throws InterruptedException {
+    private static <T> void runThreads(Stack<Element> stack, StackPerformanceMetrics<Element> metrics) throws InterruptedException {
         // process for sync stack
         Thread[] producersForSyncStack = getConfiguredThreadPool(
                 ThreadType.PRODUCER, stack,metrics);
@@ -71,21 +67,15 @@ public class UseStack {
         metrics.setTotalTime((end-start) / 1_000_000);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> Runnable getProducerRunnable(int quota, Stack<T> stack, StackPerformanceMetrics<T> metrics) {
+    private static Runnable getProducerRunnable(int quota, Stack<Element> stack, StackPerformanceMetrics<Element> metrics) {
         return () -> {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
                 try {
-                    var obj = (T) new Object();
-                    prodLock.lock();
-                    try {
-                        stack.push(obj);
-                        metrics.addToProducedData(obj);
-                    }
-                    finally {
-                        prodLock.unlock();
-                    }
+                    var newElement = new Element();
+//                    System.out.println("adding "+newElement);
+                    stack.push(newElement);
+                    metrics.addToProducedData(newElement);
                     metrics.incrementProducedCount();
                 } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
@@ -102,13 +92,8 @@ public class UseStack {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
                 try {
-                    conLock.lock();
-                    try {
-                        var obj = stack.pop();
-                        metrics.addToConsumedData(obj);
-                    } finally {
-                        conLock.unlock();
-                    }
+                    var obj = stack.pop();
+                    metrics.addToConsumedData(obj);
                     metrics.incrementConsumedCount();
                 } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
@@ -122,8 +107,8 @@ public class UseStack {
 
     private static <T> Thread[] getConfiguredThreadPool(
             ThreadType threadType,
-            Stack<T> stack,
-            StackPerformanceMetrics<T> metrics
+            Stack<Element> stack,
+            StackPerformanceMetrics<Element> metrics
     ) {
         ArrayList<Thread> threadPool = new ArrayList<>();
         if (threadType == ThreadType.PRODUCER) {

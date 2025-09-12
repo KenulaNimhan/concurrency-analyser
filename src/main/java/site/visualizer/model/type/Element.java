@@ -3,15 +3,17 @@ package site.visualizer.model.type;
 import java.util.UUID;
 
 // mimics a brick help to visualize stacking concept.
-public class Brick {
+public class Element {
     private final UUID uniqueID;
+    private final String createdBy;
 
-    public Brick(UUID uniqueID) {
+    public Element() {
         this.uniqueID = UUID.randomUUID();
+        this.createdBy = Thread.currentThread().getName();
     }
 
     @Override
     public String toString() {
-        return String.valueOf(uniqueID);
+        return uniqueID+" by "+createdBy;
     }
 }
