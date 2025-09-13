@@ -1,7 +1,5 @@
 package analyser.config;
 
-import analyser.util.ConfigKey;
-
 import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;

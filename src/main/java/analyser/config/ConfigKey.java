@@ -1,4 +1,4 @@
-package analyser.util;
+package analyser.config;
 
 public enum ConfigKey {
     TO_PRODUCE("how many items needed to be produced & consumed",
