@@ -1,5 +1,6 @@
 package analyser.config;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Configurator {
@@ -8,28 +9,97 @@ public class Configurator {
 
     public Configurable configure() {
         // gathering input from user to configure
-        System.out.print("how many items needed to be produced & consumed: ");
-        var toProduce = scan.nextInt();
-        System.out.print("how many producer threads: ");
-        var producerCount = scan.nextInt();
-        System.out.print("how many consumer threads: ");
-        var consumerCount = scan.nextInt();
-        System.out.print("max no. of elements the data structure can hold: ");
-        var stackHeight = scan.nextInt();
-        System.out.println("estimated size of the object that is being stacked or queued (in bytes): ");
-        var elementSize = scan.nextInt();
-        System.out.println("estimated scale of operations that would be performed in each iteration: ");
-        var operationalScale = scan.nextInt();
 
-        testData.setCap(stackHeight)
-                .setToProduce(toProduce)
-                .setToConsume(toProduce)
-                .setProducerCount(producerCount)
-                .setConsumerCount(consumerCount)
-                .setElementSize(elementSize)
-                .setOperationalScale(operationalScale);
+        askForAmountToProduce();
+        askForProducerCount();
+        askForConsumerCount();
+        askForCapacityOfStructure();
+        askForElementSize();
+        askForComputeScale();
 
         return testData;
+    }
+
+    private void askForAmountToProduce() {
+        while (true) {
+            try {
+                System.out.print("how many items needed to be produced & consumed: ");
+                var amt = scan.nextInt();
+                testData.setToProduce(amt);
+                testData.setToConsume(amt);
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("invalid entry!");
+                scan.nextLine();
+            }
+        }
+    }
+
+    private void askForProducerCount() {
+        while (true) {
+            try {
+                System.out.print("how many producer threads: ");
+                testData.setProducerCount(scan.nextInt());
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("invalid entry!");
+                scan.nextLine();
+            }
+        }
+    }
+
+    private void askForConsumerCount() {
+        while (true) {
+            try {
+                System.out.print("how many consumer threads: ");
+                testData.setConsumerCount(scan.nextInt());
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("invalid entry!");
+                scan.nextLine();
+            }
+        }
+    }
+
+    private void askForCapacityOfStructure() {
+        while (true) {
+            try {
+                System.out.print("max no. of elements the data structure can hold: ");
+                testData.setCap(scan.nextInt());
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("invalid entry!");
+                scan.nextLine();
+            }
+        }
+    }
+
+    private void askForElementSize() {
+        while (true) {
+            try {
+                System.out.println("size per element stacked (in bytes)");
+                System.out.print(" 1 - 2048: ");
+                testData.setElementSize(scan.nextInt());
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("invalid entry!");
+                scan.nextLine();
+            }
+        }
+    }
+
+    private void askForComputeScale() {
+        while (true) {
+            try {
+                System.out.println("estimated CPU usage for each operation");
+                System.out.print("choose on a scale from 1 - 10: ");
+                testData.setOperationalScale(scan.nextInt());
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("invalid entry!");
+                scan.nextLine();
+            }
+        }
     }
 
 }

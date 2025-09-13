@@ -9,8 +9,8 @@ public class StackPerformanceMetrics {
     private final AtomicInteger consumedCount;
     private long totalTime;
     private final List<Long> latencies = Collections.synchronizedList(new ArrayList<>());
-    private final List<Element> producedData = Collections.synchronizedList(new ArrayList<>());
-    private final List<Element> consumedData = Collections.synchronizedList(new ArrayList<>());
+    private final List<String> producedData = Collections.synchronizedList(new ArrayList<>());
+    private final List<String> consumedData = Collections.synchronizedList(new ArrayList<>());
     private final AtomicInteger errorCount = new AtomicInteger();
 
 
@@ -24,7 +24,7 @@ public class StackPerformanceMetrics {
         return stackName;
     }
 
-    public List<Element> getConsumedData() {
+    public List<String> getConsumedData() {
         return consumedData;
     }
 
@@ -59,18 +59,18 @@ public class StackPerformanceMetrics {
         return total/latencies.size();
     }
 
-    public void addToProducedData(Element val) {
+    public void addToProducedData(String val) {
         producedData.addLast(val);
     }
 
-    public void addToConsumedData(Element val) {
+    public void addToConsumedData(String val) {
         consumedData.addLast(val);
     }
 
-    private String hasDuplicates(List<Element> list) throws Exception {
+    private String hasDuplicates(List<String> list) throws Exception {
         if (list.isEmpty()) return "empty list";
-        Set<Element> set = new HashSet<>();
-        for (Element val: list) {
+        Set<String> set = new HashSet<>();
+        for (String val: list) {
             if (!set.add(val)) {
                 return String.valueOf(true);
             }
@@ -80,16 +80,16 @@ public class StackPerformanceMetrics {
 
     public String printProducedData() {
         String data = "";
-        for (Element val: producedData) {
-            data = data.concat(String.valueOf(val.getUniqueID()));
+        for (String val: producedData) {
+            data = data.concat(val+" ");
         }
         return data;
     }
 
     public String printConsumedData() {
         String data = "";
-        for (Element val: consumedData) {
-            data = data.concat(String.valueOf(val.getUniqueID()));
+        for (String val: consumedData) {
+            data = data.concat(val+" ");
         }
         return data;
     }
@@ -102,7 +102,7 @@ public class StackPerformanceMetrics {
         if (hasDuplicates(producedData).equals("true")) throw new Exception("produced data contains duplicates");
         if (hasDuplicates(consumedData).equals("true")) throw new Exception("consumed data contains duplicates");
         for (int i=0; i<producedData.size(); i++) {
-            if (!consumedData.reversed().get(i).getUniqueID().equals(producedData.get(i).getUniqueID())) return false;
+            if (!consumedData.reversed().get(i).equals(producedData.get(i))) return false;
         }
         return true;
     }
@@ -118,8 +118,6 @@ public class StackPerformanceMetrics {
                     --CORRECTNESS--
                     error count                          : %s
                     produced count equals consumed count : %b
-                    produced data contains duplicates    : %s
-                    consumed data contains duplicates    : %s
                     
                     --THROUGHPUT--
                     total time  :   %s ms
@@ -133,8 +131,6 @@ public class StackPerformanceMetrics {
                     getStackName(),
                     errorCount.get(),
                     consumeAmountEqualsProduced(),
-                    hasDuplicates(producedData),
-                    hasDuplicates(consumedData),
                     totalTime,
                     calculateThroughput(),
                     getAvgLatency());

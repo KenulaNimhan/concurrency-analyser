@@ -16,7 +16,7 @@ public class UseStack {
     private static Configurable testData = new Configurable();
 
     private static final StackPerformanceMetrics basicStackMetrics = new StackPerformanceMetrics("Basic Stack");
-    private static final StackPerformanceMetrics basicSyncStackMetrics = new StackPerformanceMetrics("Naive Sync Stack");
+    private static final StackPerformanceMetrics naiveSyncStackMetrics = new StackPerformanceMetrics("Naive Sync Stack");
     private static final StackPerformanceMetrics syncStackMetrics = new StackPerformanceMetrics("Synchronised Stack");
     private static final StackPerformanceMetrics lockStackMetrics = new StackPerformanceMetrics("Lock Based Stack");
 
@@ -27,26 +27,26 @@ public class UseStack {
 
         // creating stacks to test
         BasicStack<Element> basicStack = new BasicStack<>(testData.getCap());
-        SyncStack<Element> basicSyncStack = new SyncStack<>(testData.getCap());
-        AdvSyncStack<Element> syncStack = new AdvSyncStack<>(testData.getCap());
+        NaiveSyncStack<Element> basicSyncStack = new NaiveSyncStack<>(testData.getCap());
+        SyncStack<Element> syncStack = new SyncStack<>(testData.getCap());
         LockBasedStack<Element> lockBasedStack = new LockBasedStack<>(testData.getCap());
 
         // running the configured scenarios for each stack and collecting metrics
         runThreads(basicStack, basicStackMetrics);
-        runThreads(basicSyncStack, basicSyncStackMetrics);
+        runThreads(basicSyncStack, naiveSyncStackMetrics);
         runThreads(syncStack, syncStackMetrics);
         runThreads(lockBasedStack, lockStackMetrics);
 
         // display metrics
         System.out.println(basicStackMetrics);
-        System.out.println(basicSyncStackMetrics);
+        System.out.println(naiveSyncStackMetrics);
         System.out.println(syncStackMetrics);
         System.out.println(lockStackMetrics);
 
     }
 
     private static void runThreads(Stack<Element> stack, StackPerformanceMetrics metrics) throws InterruptedException {
-        // process for sync stack
+        // creating configured thread pools
         Thread[] producerThreads = getConfiguredThreadPool(
                 ThreadType.PRODUCER, stack,metrics);
         Thread[] consumerThreads = getConfiguredThreadPool(
@@ -72,13 +72,13 @@ public class UseStack {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
                 try {
-                    var newElement = new Element();
+                    var newElement = new Element(testData.getElementSize());
+                    newElement.compute(testData.getOperationalScale());
                     stack.push(newElement);
-                    metrics.addToProducedData(newElement);
+                    metrics.addToProducedData(String.valueOf(newElement.getUniqueID()));
                     metrics.incrementProducedCount();
                 } catch (Exception e) {
                     metrics.incrementErrorCount();
-//                    System.out.println(e.getMessage());
                 }
             }
             var opsEnd = System.nanoTime();
@@ -93,11 +93,11 @@ public class UseStack {
             for (int i=0; i<quota; i++) {
                 try {
                     var obj = stack.pop();
-                    metrics.addToConsumedData(obj);
+                    obj.compute(testData.getOperationalScale());
+                    metrics.addToConsumedData(String.valueOf(obj.getUniqueID()));
                     metrics.incrementConsumedCount();
                 } catch (Exception e) {
                     metrics.incrementErrorCount();
-//                    System.out.println(e.getMessage());
                 }
             }
             var opsEnd = System.nanoTime();
