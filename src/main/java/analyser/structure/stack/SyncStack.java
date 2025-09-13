@@ -12,6 +12,8 @@ public class SyncStack<T> implements Stack<T>{
         array = (T[]) new Object[capacity];
     }
 
+    public int cap() { return  array.length;}
+
     public int size() {
         return this.size;
     }

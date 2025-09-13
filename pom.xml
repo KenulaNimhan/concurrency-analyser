@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>site</groupId>
-	<artifactId>concurrencyAnalyser</artifactId>
+	<artifactId>concurrency-analyser</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>concurrencyVisualizer</name>
-	<description>Concurrency Visualizer</description>
+	<name>concurrencyAnalyser</name>
+	<description>Concurrency Analyser</description>
 	<url/>
 	<licenses>
 		<license/>

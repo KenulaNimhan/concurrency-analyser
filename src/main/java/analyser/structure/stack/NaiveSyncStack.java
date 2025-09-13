@@ -29,16 +29,11 @@ public class NaiveSyncStack<T> implements Stack<T>{
     }
 
     public synchronized T pop() {
-        if (this.isEmpty()) throw new NoSuchElementException("Cannot pop. stack empty.");
+        if (this.isEmpty()) throw new NoSuchElementException("Cannot pop. stack is empty.");
         var valToReturn = array[size-1];
         array[size-1] = null;
         size--;
         return valToReturn;
-    }
-
-    public T peek() {
-        if (this.isEmpty()) throw new NoSuchElementException("stack is empty. no element to peek.");
-        return array[size-1];
     }
 
     public boolean isEmpty() {
