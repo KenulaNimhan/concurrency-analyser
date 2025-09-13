@@ -35,11 +35,6 @@ public class BasicStack<T> implements Stack<T>{
         return valToReturn;
     }
 
-    public T peek() {
-        if (this.isEmpty()) throw new NoSuchElementException("stack is empty. no element to peek.");
-        return array[size-1];
-    }
-
     public boolean isEmpty() {
         return size == 0;
     }
