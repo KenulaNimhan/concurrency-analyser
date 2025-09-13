@@ -1,105 +1,67 @@
 package analyser.config;
 
+import analyser.util.ConfigKey;
+
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class Configurator {
-    private static final Configurable testData = new Configurable();
+    private static final Configuration testData = new Configuration();
     private static final Scanner scan = new Scanner(System.in);
 
-    public Configurable configure() {
-        // gathering input from user to configure
+    private static final Consumer<Integer> actionOfSettingToProduce = testData::setToProduce;
+    private static final Consumer<Integer> actionOfSettingProducerCount = testData::setProducerCount;
+    private static final Consumer<Integer> actionOfSettingConsumerCount = testData::setConsumerCount;
+    private static final Consumer<Integer> actionOfSettingStackCap = testData::setCap;
+    private static final Consumer<Integer> actionOfSettingElementSize = testData::setElementSize;
+    private static final Consumer<Integer> actionOfSettingOperationalScale = testData::setOperationalScale;
 
-        askForAmountToProduce();
-        askForProducerCount();
-        askForConsumerCount();
-        askForCapacityOfStructure();
-        askForElementSize();
-        askForComputeScale();
+    private static final Map<ConfigKey, Consumer<Integer>> configurableActions = Map.of(
+            ConfigKey.TO_PRODUCE, actionOfSettingToProduce,
+            ConfigKey.PRODUCER_COUNT, actionOfSettingProducerCount,
+            ConfigKey.CONSUMER_COUNT, actionOfSettingConsumerCount,
+            ConfigKey.CAP, actionOfSettingStackCap,
+            ConfigKey.ELEMENT_SIZE, actionOfSettingElementSize,
+            ConfigKey.OPERATIONAL_SCALE, actionOfSettingOperationalScale
+    );
 
+    public Configuration configure() {
+
+        for (ConfigKey configurable: ConfigKey.values()) {
+            var action = configurableActions.get(configurable);
+            int userInput = askFor(configurable.getPrompt(), configurable.getRange()[0], configurable.getRange()[1]);
+            if (userInput == -1) {
+                System.out.println("""
+                --------------------------------------------------------
+                ___________THANK YOU FOR USING THE APPLICATION__________
+                """);
+                System.exit(0);
+            }
+            action.accept(userInput);
+        }
         return testData;
     }
 
-    private void askForAmountToProduce() {
+    private int askFor(String prompt, int rangeStart, int rangeEnd) {
+        int userInput;
         while (true) {
             try {
-                System.out.print("how many items needed to be produced & consumed: ");
-                var amt = scan.nextInt();
-                testData.setToProduce(amt);
-                testData.setToConsume(amt);
+                System.out.println(prompt);
+                System.out.print(rangeStart+" - "+rangeEnd+": ");
+                userInput = scan.nextInt();
+                if (userInput ==-1) break;
+                if (userInput < rangeStart || userInput > rangeEnd) {
+                    System.out.println("value out of range");
+                    continue;
+                }
                 break;
             } catch (InputMismatchException e) {
-                System.out.println("invalid entry!");
+                System.out.println("invalid entry");
                 scan.nextLine();
             }
         }
+        return userInput;
     }
-
-    private void askForProducerCount() {
-        while (true) {
-            try {
-                System.out.print("how many producer threads: ");
-                testData.setProducerCount(scan.nextInt());
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("invalid entry!");
-                scan.nextLine();
-            }
-        }
-    }
-
-    private void askForConsumerCount() {
-        while (true) {
-            try {
-                System.out.print("how many consumer threads: ");
-                testData.setConsumerCount(scan.nextInt());
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("invalid entry!");
-                scan.nextLine();
-            }
-        }
-    }
-
-    private void askForCapacityOfStructure() {
-        while (true) {
-            try {
-                System.out.print("max no. of elements the data structure can hold: ");
-                testData.setCap(scan.nextInt());
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("invalid entry!");
-                scan.nextLine();
-            }
-        }
-    }
-
-    private void askForElementSize() {
-        while (true) {
-            try {
-                System.out.println("size per element stacked (in bytes)");
-                System.out.print(" 1 - 2048: ");
-                testData.setElementSize(scan.nextInt());
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("invalid entry!");
-                scan.nextLine();
-            }
-        }
-    }
-
-    private void askForComputeScale() {
-        while (true) {
-            try {
-                System.out.println("estimated CPU usage for each operation");
-                System.out.print("choose on a scale from 1 - 10: ");
-                testData.setOperationalScale(scan.nextInt());
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("invalid entry!");
-                scan.nextLine();
-            }
-        }
-    }
-
 }

@@ -1,6 +1,6 @@
 package analyser.config;
 
-public class Configurable {
+public class Configuration {
     private int toProduce;
     private int toConsume;
     private int producerCount;
@@ -9,7 +9,7 @@ public class Configurable {
     private int elementSize;
     private int operationalScale;
 
-    public Configurable() {}
+    public Configuration() {}
 
     // GETTERS
     public int getToProduce() {
@@ -42,38 +42,27 @@ public class Configurable {
 
     // SETTERS
 
-    public Configurable setToProduce(int toProduce) {
-        this.toProduce = toProduce;
-        return this;
+    public void setToProduce(int toProduce) {
+        this.toProduce = this.toConsume = toProduce;
     }
 
-    public Configurable setToConsume(int toConsume) {
-        this.toConsume = toConsume;
-        return this;
-    }
-
-    public Configurable setProducerCount(int producerCount) {
+    public void setProducerCount(int producerCount) {
         this.producerCount = producerCount;
-        return this;
     }
 
-    public Configurable setConsumerCount(int consumerCount) {
+    public void setConsumerCount(int consumerCount) {
         this.consumerCount = consumerCount;
-        return this;
     }
 
-    public Configurable setCap(int cap) {
+    public void setCap(int cap) {
         this.cap = cap;
-        return this;
     }
 
-    public Configurable setElementSize(int elementSize) {
+    public void setElementSize(int elementSize) {
         this.elementSize = elementSize;
-        return this;
     }
 
-    public Configurable setOperationalScale(int operationalScale) {
+    public void setOperationalScale(int operationalScale) {
         this.operationalScale = operationalScale;
-        return this;
     }
 }

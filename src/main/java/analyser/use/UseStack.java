@@ -1,6 +1,6 @@
 package analyser.use;
 
-import analyser.config.Configurable;
+import analyser.config.Configuration;
 import analyser.config.Configurator;
 import analyser.structure.stack.*;
 import analyser.util.Element;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class UseStack {
     private static final Configurator configurator = new Configurator();
-    private static Configurable testData = new Configurable();
+    private static Configuration testData = new Configuration();
 
     private static final StackPerformanceMetrics basicStackMetrics = new StackPerformanceMetrics("Basic Stack");
     private static final StackPerformanceMetrics naiveSyncStackMetrics = new StackPerformanceMetrics("Naive Sync Stack");
@@ -21,6 +21,14 @@ public class UseStack {
     private static final StackPerformanceMetrics lockStackMetrics = new StackPerformanceMetrics("Lock Based Stack");
 
     public static void main(String[] args) throws InterruptedException {
+
+        System.out.println("""
+                ---------------------------------------------------
+                    WELCOME TO CONCURRENCY PERFORMANCE ANALYSER
+                ---------------------------------------------------
+                enter -1 at any time to exit.
+                set configuration settings;
+                """);
 
         // configuring test data
         testData = configurator.configure();
@@ -57,6 +65,8 @@ public class UseStack {
         Collections.addAll(allThreads, consumerThreads);
         Collections.shuffle(allThreads);
 
+        System.out.println("using "+metrics.getStackName()+" ...");
+
         var start = System.nanoTime();
         // starting
         for (Thread thread: allThreads) thread.start();
@@ -65,6 +75,8 @@ public class UseStack {
         var end = System.nanoTime();
 
         metrics.setTotalTime((end-start) / 1_000_000);
+
+        System.out.println("metrics collected for "+metrics.getStackName());
     }
 
     private static Runnable getProducerRunnable(int quota, Stack<Element> stack, StackPerformanceMetrics metrics) {
