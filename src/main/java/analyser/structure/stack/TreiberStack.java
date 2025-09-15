@@ -1,9 +1,13 @@
 package analyser.structure.stack;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 
-// atomic operations
-public class TreiberStack<S> {
+// user atomic references and compare and swap technique
+// since this is link list based it is unbounded
+public class TreiberStack<S> implements Stack<S>{
+
     private static class Node<T> {
         private T val;
         private Node<T> next;
@@ -13,30 +17,47 @@ public class TreiberStack<S> {
         }
     }
 
-    private Node<S> topNode;
-    private int size;
-    private final int cap;
+    private final AtomicReference<Node<S>> topNode = new AtomicReference<>();
+    private final Semaphore space;
 
-    public TreiberStack(int cap) {
-        this.cap = cap;
-        this.size = 0;
+    public TreiberStack(int capacity) {
+        this.space = new Semaphore(capacity);
     }
 
-    public void push(S element) {
-        if (size == cap) throw new NoSuchElementException("cannot push. stack full");
-        var newNode = new Node<S>(element);
-        newNode.next = topNode;
-        topNode = newNode;
-
-        size++;
+    public int size() {
+        int size = 0;
+        var curr = topNode.get();
+        while (curr != null) {
+            size++;
+            curr = curr.next;
+        }
+        return size;
     }
+
+    public void push(S element) throws InterruptedException {
+        space.acquire();
+        Node<S> newNode = new Node<>(element);
+        Node<S> current;
+        do {
+            current = topNode.get();
+            newNode.next = current;
+        } while (!topNode.compareAndSet(current, newNode));
+    }
+
 
     public S pop() {
-        if (size == 0) throw new NoSuchElementException("cannot pop. stack empty");
-        var returnVal = topNode.val;
-        topNode = topNode.next;
-        size--;
+        Node<S> currentTop;
+        Node<S> newTop;
+        do {
+            currentTop = topNode.get();
+            if (currentTop == null) return null;
+            newTop = currentTop.next;
+        } while (!topNode.compareAndSet(currentTop, newTop));
+        space.release();
+        return currentTop.val;
+    }
 
-        return returnVal;
+    public boolean isEmpty() {
+        return topNode.get() == null;
     }
 }

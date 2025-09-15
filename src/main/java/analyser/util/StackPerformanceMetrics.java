@@ -67,15 +67,14 @@ public class StackPerformanceMetrics {
         consumedData.addLast(val);
     }
 
-    private String hasDuplicates(List<String> list) throws Exception {
-        if (list.isEmpty()) return "empty list";
+    private boolean hasDuplicates(List<String> list) throws Exception {
         Set<String> set = new HashSet<>();
         for (String val: list) {
             if (!set.add(val)) {
-                return String.valueOf(true);
+                return true;
             }
         }
-        return String.valueOf(false);
+        return false;
     }
 
     public String printProducedData() {
@@ -94,17 +93,8 @@ public class StackPerformanceMetrics {
         return data;
     }
 
-    public boolean consumeAmountEqualsProduced() {
+    public boolean consumeCountEqualsProduced() {
         return consumedCount.get() == producedCount.get();
-    }
-
-    public boolean isLifo() throws Exception {
-        if (hasDuplicates(producedData).equals("true")) throw new Exception("produced data contains duplicates");
-        if (hasDuplicates(consumedData).equals("true")) throw new Exception("consumed data contains duplicates");
-        for (int i=0; i<producedData.size(); i++) {
-            if (!consumedData.reversed().get(i).equals(producedData.get(i))) return false;
-        }
-        return true;
     }
 
     @Override
@@ -117,7 +107,7 @@ public class StackPerformanceMetrics {
                     
                     --CORRECTNESS--
                     error count                          : %s
-                    produced count equals consumed count : %b
+                    produced count = consumed count      : %b
                     
                     --THROUGHPUT--
                     total time  :   %s ms
@@ -130,7 +120,7 @@ public class StackPerformanceMetrics {
                     """,
                     getStackName(),
                     errorCount.get(),
-                    consumeAmountEqualsProduced(),
+                    consumeCountEqualsProduced(),
                     totalTime,
                     calculateThroughput(),
                     getAvgLatency());

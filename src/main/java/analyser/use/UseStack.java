@@ -19,6 +19,7 @@ public class UseStack {
     private static final StackPerformanceMetrics naiveSyncStackMetrics = new StackPerformanceMetrics("Naive Sync Stack");
     private static final StackPerformanceMetrics syncStackMetrics = new StackPerformanceMetrics("Synchronised Stack");
     private static final StackPerformanceMetrics lockStackMetrics = new StackPerformanceMetrics("Lock Based Stack");
+    private static final StackPerformanceMetrics casStackMetrics = new StackPerformanceMetrics("Treiber Stack");
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -38,18 +39,21 @@ public class UseStack {
         NaiveSyncStack<Element> basicSyncStack = new NaiveSyncStack<>(testData.getCap());
         SyncStack<Element> syncStack = new SyncStack<>(testData.getCap());
         LockBasedStack<Element> lockBasedStack = new LockBasedStack<>(testData.getCap());
+        TreiberStack<Element> casStack = new TreiberStack<>(testData.getCap());
 
         // running the configured scenarios for each stack and collecting metrics
         runThreads(basicStack, basicStackMetrics);
         runThreads(basicSyncStack, naiveSyncStackMetrics);
         runThreads(syncStack, syncStackMetrics);
         runThreads(lockBasedStack, lockStackMetrics);
+        runThreads(casStack, casStackMetrics);
 
         // display metrics
         System.out.println(basicStackMetrics);
         System.out.println(naiveSyncStackMetrics);
         System.out.println(syncStackMetrics);
         System.out.println(lockStackMetrics);
+        System.out.println(casStackMetrics);
 
     }
 
@@ -100,14 +104,42 @@ public class UseStack {
     }
 
     private static Runnable getConsumerRunnable(int quota, Stack<Element> stack, StackPerformanceMetrics metrics) {
+        if (stack instanceof TreiberStack<Element>) {
+            return () -> {
+                var opsBegin = System.nanoTime();
+                int consumed = 0;
+                while (consumed < quota) {
+                    try {
+                        var obj = stack.pop();
+                        if (obj != null ) {
+                            obj.compute(testData.getOperationalScale());
+                            metrics.addToConsumedData(String.valueOf(obj.getUniqueID()));
+                            metrics.incrementConsumedCount();
+
+                            consumed++;
+                        } else {
+                            Thread.yield();
+                        }
+                    } catch (Exception e) {
+                        metrics.incrementErrorCount();
+                    }
+                }
+                var opsEnd = System.nanoTime();
+                var latencyForThread = (opsEnd-opsBegin) / quota;
+                metrics.addLatency(latencyForThread);
+            };
+        }
+
         return () -> {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
                 try {
                     var obj = stack.pop();
-                    obj.compute(testData.getOperationalScale());
-                    metrics.addToConsumedData(String.valueOf(obj.getUniqueID()));
-                    metrics.incrementConsumedCount();
+                    if (obj != null ) {
+                        obj.compute(testData.getOperationalScale());
+                        metrics.addToConsumedData(String.valueOf(obj.getUniqueID()));
+                        metrics.incrementConsumedCount();
+                    }
                 } catch (Exception e) {
                     metrics.incrementErrorCount();
                 }
