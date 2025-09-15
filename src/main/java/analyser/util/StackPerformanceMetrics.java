@@ -24,10 +24,6 @@ public class StackPerformanceMetrics {
         return stackName;
     }
 
-    public List<String> getConsumedData() {
-        return consumedData;
-    }
-
     public void setTotalTime(long time) {
         this.totalTime = time;
     }
@@ -67,7 +63,7 @@ public class StackPerformanceMetrics {
         consumedData.addLast(val);
     }
 
-    private boolean hasDuplicates(List<String> list) throws Exception {
+    public boolean hasDuplicates(List<String> list) {
         Set<String> set = new HashSet<>();
         for (String val: list) {
             if (!set.add(val)) {
