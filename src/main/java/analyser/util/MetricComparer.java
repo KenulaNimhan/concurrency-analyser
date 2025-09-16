@@ -9,6 +9,20 @@ public class MetricComparer {
         metricsList.add(val);
     }
 
+    public void printCorrectnessInfo() {
+        for (StackPerformanceMetrics stack: metricsList) {
+            if (stack.hasDuplicates(stack.getProducedData())) {
+                System.out.println(stack.getStackName()+" has duplicated produced data");
+            }
+            if (stack.hasDuplicates(stack.getConsumedData())) {
+                System.out.println(stack.getStackName()+" has duplicated consumed data");
+            }
+            if (!stack.consumeCountEqualsProduced()) {
+                System.out.println(stack.getStackName()+"'s consume count and produced count is not equal");
+            }
+        }
+    }
+
     public void printComparison() {
         System.out.printf("""
              --------------------------------------------------------------------------------------------------------
@@ -33,5 +47,6 @@ public class MetricComparer {
         for (int i=0; i<104; i++) {
             System.out.print("-");
         }
+        System.out.println();
     }
 }

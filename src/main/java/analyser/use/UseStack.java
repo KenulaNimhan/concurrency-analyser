@@ -59,8 +59,6 @@ public class UseStack {
         comparer.addToList(lockStackMetrics);
         comparer.addToList(casStackMetrics);
 
-        comparer.printComparison();
-
     }
 
     private static void runThreads(Stack<Element> stack, StackPerformanceMetrics metrics) throws InterruptedException {

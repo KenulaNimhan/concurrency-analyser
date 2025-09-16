@@ -24,6 +24,14 @@ public class StackPerformanceMetrics {
         return stackName;
     }
 
+    public List<String> getProducedData() {
+        return producedData;
+    }
+
+    public List<String> getConsumedData() {
+        return consumedData;
+    }
+
     public long getTotalTime() {
         return totalTime;
     }
@@ -81,7 +89,7 @@ public class StackPerformanceMetrics {
         return false;
     }
 
-    public String printProducedData() {
+    public String getProducedDataValues() {
         String data = "";
         for (String val: producedData) {
             data = data.concat(val+" ");
@@ -89,7 +97,7 @@ public class StackPerformanceMetrics {
         return data;
     }
 
-    public String printConsumedData() {
+    public String getConsumedDataValues() {
         String data = "";
         for (String val: consumedData) {
             data = data.concat(val+" ");
