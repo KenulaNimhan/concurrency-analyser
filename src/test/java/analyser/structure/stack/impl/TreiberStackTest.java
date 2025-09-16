@@ -1,12 +1,10 @@
 package analyser.structure.stack.impl;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TreiberStackTest {
 
@@ -20,22 +18,6 @@ class TreiberStackTest {
 
         // assert
         assertThat(underTest.size()).isEqualTo(2);
-    }
-
-    @Test
-    @Disabled
-    // treiber stack is semaphore based
-    void shouldThrowException_TryToPush_WhenFull() throws InterruptedException {
-        // arrange
-        for (int i=0; i<5; i++) {
-            underTest.push(i);
-        }
-
-        // assert
-        assertThatThrownBy(() -> underTest.push(1))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("stack is full");
-
     }
 
     @Test
