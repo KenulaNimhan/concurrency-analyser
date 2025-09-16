@@ -59,8 +59,6 @@ public class UseStack {
         comparer.addToList(lockStackMetrics);
         comparer.addToList(casStackMetrics);
 
-        comparer.populate();
-
         comparer.printComparison();
 
     }
