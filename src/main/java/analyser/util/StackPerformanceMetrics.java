@@ -24,6 +24,14 @@ public class StackPerformanceMetrics {
         return stackName;
     }
 
+    public long getTotalTime() {
+        return totalTime;
+    }
+
+    public Integer getErrorCount() {
+        return this.errorCount.get();
+    }
+
     public void setTotalTime(long time) {
         this.totalTime = time;
     }
