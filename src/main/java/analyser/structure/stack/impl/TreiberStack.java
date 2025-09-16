@@ -1,12 +1,13 @@
-package analyser.structure.stack;
+package analyser.structure.stack.impl;
 
-import java.util.NoSuchElementException;
+import analyser.structure.stack.Stack;
+
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
-// user atomic references and compare and swap technique
-// since this is link list based it is unbounded
-public class TreiberStack<S> implements Stack<S>{
+// uses atomic references and compare and swap technique (CAS)
+// bounded nature is achieved by using Semaphore
+public class TreiberStack<S> implements Stack<S> {
 
     private static class Node<T> {
         private T val;

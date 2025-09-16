@@ -1,14 +1,16 @@
-package analyser.structure.stack;
+package analyser.structure.stack.impl;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class LockBasedStackTest {
+class BasicStackTest {
 
-    LockBasedStack<Integer> underTest = new LockBasedStack<>(5);
+    BasicStack<Integer> underTest = new BasicStack<>(5);
 
     @Test
     void shouldGiveCorrectCapacityEvenWhenEmpty() {
@@ -17,7 +19,7 @@ class LockBasedStackTest {
     }
 
     @Test
-    void shouldGiveCorrectCapacityWhenContainsElements() throws InterruptedException {
+    void shouldGiveCorrectCapacityWhenContainsElements() {
         // arrange
         underTest.push(2);
 
@@ -26,7 +28,7 @@ class LockBasedStackTest {
     }
 
     @Test
-    void shouldGiveCorrectSizeOfStack() throws InterruptedException {
+    void shouldGiveCorrectSizeOfStack() {
         // arrange
         underTest.push(2);
         underTest.push(3);
@@ -36,13 +38,35 @@ class LockBasedStackTest {
     }
 
     @Test
+    void shouldThrowException_TryToPush_WhenFull() {
+        // arrange
+        for (int i=0; i<5; i++) {
+            underTest.push(i);
+        }
+
+        // assert
+        assertThatThrownBy(() -> underTest.push(1))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("stack is full");
+
+    }
+
+    @Test
+    void shouldThrowException_TryToPop_WhenEmpty() {
+        // assert
+        assertThatThrownBy(() -> underTest.pop())
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("stack is empty");
+    }
+
+    @Test
     void shouldIndicateWhenEmpty() {
         // assert
         assertThat(underTest.isEmpty()).isTrue();
     }
 
     @Test
-    void shouldIndicateWhenNotEmpty() throws InterruptedException {
+    void shouldIndicateWhenNotEmpty() {
         // arrange
         underTest.push(5);
         underTest.push(4);
@@ -53,16 +77,16 @@ class LockBasedStackTest {
     }
 
     @Test
-    void accountingMethodIsLIFO() throws InterruptedException {
+    void accountingMethodIsLIFO() {
         // arrange
         int[] orderToProduce = new int[] {1, 2, 3, 4, 5};
 
-        // populate the stack
+            // populate the stack
         for (int val: orderToProduce) {
             underTest.push(val);
         }
 
-        // de-populate the stack
+            // de-populate the stack
         ArrayList<Integer> consumedOrder = new ArrayList<>(5);
         while (!underTest.isEmpty()) {
             consumedOrder.addLast(underTest.pop());
@@ -72,5 +96,6 @@ class LockBasedStackTest {
         for (int i=0; i<orderToProduce.length; i++) {
             assertThat(orderToProduce[i]).isEqualTo(consumedOrder.reversed().get(i));
         }
+
     }
 }

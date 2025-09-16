@@ -1,4 +1,4 @@
-package analyser.structure.stack;
+package analyser.structure.stack.impl;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,9 +8,9 @@ import java.util.NoSuchElementException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class BasicStackTest {
+class NaiveSyncStackTest {
 
-    BasicStack<Integer> underTest = new BasicStack<>(5);
+    NaiveSyncStack<Integer> underTest = new NaiveSyncStack<>(5);
 
     @Test
     void shouldGiveCorrectCapacityEvenWhenEmpty() {
@@ -81,12 +81,12 @@ class BasicStackTest {
         // arrange
         int[] orderToProduce = new int[] {1, 2, 3, 4, 5};
 
-            // populate the stack
+        // populate the stack
         for (int val: orderToProduce) {
             underTest.push(val);
         }
 
-            // de-populate the stack
+        // de-populate the stack
         ArrayList<Integer> consumedOrder = new ArrayList<>(5);
         while (!underTest.isEmpty()) {
             consumedOrder.addLast(underTest.pop());

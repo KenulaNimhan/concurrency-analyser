@@ -1,18 +1,29 @@
-package analyser.structure.stack;
+package analyser.structure.stack.impl;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
-class TreiberStackTest {
+class SyncStackTest {
 
-    TreiberStack<Integer> underTest = new TreiberStack<>(5);
+    SyncStack<Integer> underTest = new SyncStack<>(5);
+
+    @Test
+    void shouldGiveCorrectCapacityEvenWhenEmpty() {
+        // assert
+        assertThat(underTest.cap()).isEqualTo(5);
+    }
+
+    @Test
+    void shouldGiveCorrectCapacityWhenContainsElements() throws InterruptedException {
+        // arrange
+        underTest.push(2);
+
+        // assert
+        assertThat(underTest.cap()).isEqualTo(5);
+    }
 
     @Test
     void shouldGiveCorrectSizeOfStack() throws InterruptedException {
@@ -22,28 +33,6 @@ class TreiberStackTest {
 
         // assert
         assertThat(underTest.size()).isEqualTo(2);
-    }
-
-    @Test
-    @Disabled
-    // treiber stack is semaphore based
-    void shouldThrowException_TryToPush_WhenFull() throws InterruptedException {
-        // arrange
-        for (int i=0; i<5; i++) {
-            underTest.push(i);
-        }
-
-        // assert
-        assertThatThrownBy(() -> underTest.push(1))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("stack is full");
-
-    }
-
-    @Test
-    void shouldGiveNull_WhenTryToPop_WhenEmpty() {
-        // assert
-        assertThat(underTest.pop()).isNull();
     }
 
     @Test
@@ -83,6 +72,5 @@ class TreiberStackTest {
         for (int i=0; i<orderToProduce.length; i++) {
             assertThat(orderToProduce[i]).isEqualTo(consumedOrder.reversed().get(i));
         }
-
     }
 }

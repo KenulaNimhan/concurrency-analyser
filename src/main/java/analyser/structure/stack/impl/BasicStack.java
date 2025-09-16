@@ -1,42 +1,39 @@
-package analyser.structure.stack;
+package analyser.structure.stack.impl;
+
+import analyser.structure.stack.Stack;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
-public class SyncStack<T> implements Stack<T>{
+public class BasicStack<T> implements Stack<T> {
     private int size; // actual size of the stack - number of elements
     private final T[] array;
 
-    @SuppressWarnings("unchecked")
-    public SyncStack(int capacity) {
+    @SuppressWarnings("unchecked") // to support generic array creation
+    public BasicStack(int capacity) {
         size = 0;
         array = (T[]) new Object[capacity];
     }
 
-    public int cap() { return  array.length;}
+    public int cap() {
+        return this.array.length;
+    }
 
     public int size() {
         return this.size;
     }
 
-    public synchronized void push(T val) throws InterruptedException{
-        while (size == array.length) {
-            wait();
-        }
+    public void push(T val){
+        if (size == array.length) throw new IllegalStateException("Cannot push. stack is full.");
         array[size] = val;
         size++;
-
-        notifyAll();
     }
 
-    public synchronized T pop() throws InterruptedException {
-        while(this.isEmpty()) {
-            wait();
-        }
+    public T pop() {
+        if (this.isEmpty()) throw new NoSuchElementException("Cannot pop. stack is empty.");
         var valToReturn = array[size-1];
         array[size-1] = null;
         size--;
-
-        notifyAll();
         return valToReturn;
     }
 

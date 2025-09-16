@@ -1,10 +1,12 @@
-package analyser.structure.stack;
+package analyser.structure.stack.impl;
+
+import analyser.structure.stack.Stack;
 
 import java.util.Arrays;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LockBasedStack<T> implements Stack<T>{
+public class LockBasedStack<T> implements Stack<T> {
     private int size; // actual size of the stack - number of elements
     private final T[] array;
 
