@@ -3,7 +3,9 @@ package analyser.use;
 import analyser.config.Configuration;
 import analyser.config.Configurator;
 import analyser.structure.stack.*;
+import analyser.structure.stack.impl.*;
 import analyser.util.Element;
+import analyser.util.MetricComparer;
 import analyser.util.StackPerformanceMetrics;
 import analyser.util.ThreadType;
 
@@ -20,6 +22,8 @@ public class UseStack {
     private static final StackPerformanceMetrics syncStackMetrics = new StackPerformanceMetrics("Synchronised Stack");
     private static final StackPerformanceMetrics lockStackMetrics = new StackPerformanceMetrics("Lock Based Stack");
     private static final StackPerformanceMetrics casStackMetrics = new StackPerformanceMetrics("Treiber Stack");
+
+    private static final MetricComparer comparer = new MetricComparer();
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -48,12 +52,16 @@ public class UseStack {
         runThreads(lockBasedStack, lockStackMetrics);
         runThreads(casStack, casStackMetrics);
 
-        // display metrics
-        System.out.println(basicStackMetrics);
-        System.out.println(naiveSyncStackMetrics);
-        System.out.println(syncStackMetrics);
-        System.out.println(lockStackMetrics);
-        System.out.println(casStackMetrics);
+        // adding all metrics to comparer
+        comparer.addToList(basicStackMetrics);
+        comparer.addToList(naiveSyncStackMetrics);
+        comparer.addToList(syncStackMetrics);
+        comparer.addToList(lockStackMetrics);
+        comparer.addToList(casStackMetrics);
+
+        comparer.populate();
+
+        comparer.printComparison();
 
     }
 
