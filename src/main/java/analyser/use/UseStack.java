@@ -6,7 +6,7 @@ import analyser.structure.stack.*;
 import analyser.structure.stack.impl.*;
 import analyser.util.Element;
 import analyser.util.MetricComparer;
-import analyser.util.StackPerformanceMetrics;
+import analyser.util.PerformanceMetrics;
 import analyser.util.ThreadType;
 
 import java.util.ArrayList;
@@ -17,11 +17,11 @@ public class UseStack {
     private static final Configurator configurator = new Configurator();
     private static Configuration testData = new Configuration();
 
-    private static final StackPerformanceMetrics basicStackMetrics = new StackPerformanceMetrics("Basic Stack");
-    private static final StackPerformanceMetrics naiveSyncStackMetrics = new StackPerformanceMetrics("Naive Sync Stack");
-    private static final StackPerformanceMetrics syncStackMetrics = new StackPerformanceMetrics("Synchronised Stack");
-    private static final StackPerformanceMetrics lockStackMetrics = new StackPerformanceMetrics("Lock Based Stack");
-    private static final StackPerformanceMetrics casStackMetrics = new StackPerformanceMetrics("Treiber Stack");
+    private static final PerformanceMetrics basicStackMetrics = new PerformanceMetrics("Basic Stack");
+    private static final PerformanceMetrics naiveSyncStackMetrics = new PerformanceMetrics("Naive Sync Stack");
+    private static final PerformanceMetrics syncStackMetrics = new PerformanceMetrics("Synchronised Stack");
+    private static final PerformanceMetrics lockStackMetrics = new PerformanceMetrics("Lock Based Stack");
+    private static final PerformanceMetrics casStackMetrics = new PerformanceMetrics("Treiber Stack");
 
     private static final MetricComparer comparer = new MetricComparer();
 
@@ -61,7 +61,7 @@ public class UseStack {
 
     }
 
-    private static void runThreads(Stack<Element> stack, StackPerformanceMetrics metrics) throws InterruptedException {
+    private static void runThreads(Stack<Element> stack, PerformanceMetrics metrics) throws InterruptedException {
         // creating configured thread pools
         Thread[] producerThreads = getConfiguredThreadPool(
                 ThreadType.PRODUCER, stack,metrics);
@@ -73,7 +73,7 @@ public class UseStack {
         Collections.addAll(allThreads, consumerThreads);
         Collections.shuffle(allThreads);
 
-        System.out.println("using "+metrics.getStackName()+" ...");
+        System.out.println("using "+metrics.getName()+" ...");
 
         var start = System.nanoTime();
         // starting
@@ -84,10 +84,10 @@ public class UseStack {
 
         metrics.setTotalTime((end-start) / 1_000_000);
 
-        System.out.println("metrics collected for "+metrics.getStackName());
+        System.out.println("metrics collected for "+metrics.getName());
     }
 
-    private static Runnable getProducerRunnable(int quota, Stack<Element> stack, StackPerformanceMetrics metrics) {
+    private static Runnable getProducerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
         return () -> {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
@@ -107,7 +107,7 @@ public class UseStack {
         };
     }
 
-    private static Runnable getConsumerRunnable(int quota, Stack<Element> stack, StackPerformanceMetrics metrics) {
+    private static Runnable getConsumerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
         if (stack instanceof TreiberStack<Element>) {
             return () -> {
                 var opsBegin = System.nanoTime();
@@ -157,7 +157,7 @@ public class UseStack {
     private static Thread[] getConfiguredThreadPool(
             ThreadType threadType,
             Stack<Element> stack,
-            StackPerformanceMetrics metrics
+            PerformanceMetrics metrics
     ) {
         ArrayList<Thread> threadPool = new ArrayList<>();
         if (threadType == ThreadType.PRODUCER) {

@@ -3,7 +3,7 @@ package analyser.util;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class StackPerformanceMetrics {
+public class PerformanceMetrics {
     private final String stackName;
     private final AtomicInteger producedCount;
     private final AtomicInteger consumedCount;
@@ -14,13 +14,13 @@ public class StackPerformanceMetrics {
     private final AtomicInteger errorCount = new AtomicInteger();
 
 
-    public StackPerformanceMetrics(String name) {
+    public PerformanceMetrics(String name) {
         this.stackName = name;
         this.producedCount = new AtomicInteger();
         this.consumedCount = new AtomicInteger();
     }
 
-    public String getStackName() {
+    public String getName() {
         return stackName;
     }
 
@@ -130,7 +130,7 @@ public class StackPerformanceMetrics {
                     
                     ---------------------------------------------
                     """,
-                    getStackName(),
+                    getName(),
                     errorCount.get(),
                     consumeCountEqualsProduced(),
                     totalTime,

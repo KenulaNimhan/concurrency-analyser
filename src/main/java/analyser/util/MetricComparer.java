@@ -3,22 +3,22 @@ package analyser.util;
 import java.util.*;
 
 public class MetricComparer {
-    List<StackPerformanceMetrics> metricsList = new ArrayList<>();
+    List<PerformanceMetrics> metricsList = new ArrayList<>();
 
-    public void addToList(StackPerformanceMetrics val) {
+    public void addToList(PerformanceMetrics val) {
         metricsList.add(val);
     }
 
     public void printCorrectnessInfo() {
-        for (StackPerformanceMetrics stack: metricsList) {
+        for (PerformanceMetrics stack: metricsList) {
             if (stack.hasDuplicates(stack.getProducedData())) {
-                System.out.println(stack.getStackName()+" has duplicated produced data");
+                System.out.println(stack.getName()+" has duplicated produced data");
             }
             if (stack.hasDuplicates(stack.getConsumedData())) {
-                System.out.println(stack.getStackName()+" has duplicated consumed data");
+                System.out.println(stack.getName()+" has duplicated consumed data");
             }
             if (!stack.consumeCountEqualsProduced()) {
-                System.out.println(stack.getStackName()+"'s consume count and produced count is not equal");
+                System.out.println(stack.getName()+"'s consume count and produced count is not equal");
             }
         }
     }
@@ -32,11 +32,11 @@ public class MetricComparer {
              
              """, "STACK", "ERROR COUNT", "TOTAL TIME (ms)", "THROUGHPUT (ops/ms)", "AVG LATENCY (ms/ops)");
 
-        for (StackPerformanceMetrics metric: metricsList) {
+        for (PerformanceMetrics metric: metricsList) {
             System.out.printf("""
                 %-20s %-15s %-20s %-25.3f %.4f \n
                 """,
-                metric.getStackName(),
+                metric.getName(),
                 metric.getErrorCount(),
                 metric.getTotalTime(),
                 metric.calculateThroughput(),
