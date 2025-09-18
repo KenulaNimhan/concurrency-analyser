@@ -48,7 +48,14 @@ user will be prompted to enter the following configurable data,
 <br>
 * The object that is being produced, and consumed is Element.java, which is a configurable object.
 <br>
-* Users can choose the size they want this object to be and also choose the estimated compute power a pop or push might take (on a scale from 1-10).
+* Users can choose the size they want this object to be.
+<br>
+* User can enter a size between 1 - 2048. A byte array of this size gets created as part of Element.java.
+<br>
+<br>
+* Users can also choose the estimated compute power a pop or push might take (on a scale from 0-10).
+<br>
+* A compute operation takes place before each and every push/pop or enqueue/dequeue based on the scale configured. if user selects 10 all elements within byte array specified above will get accessed and incremented.
 <br>
 * This is so the user can mimic the scenario they want in real life to get performance metrics accurate and practical as possible.
 
