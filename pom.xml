@@ -8,9 +8,9 @@
 		<version>3.5.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>site</groupId>
-	<artifactId>concurrency-analyser</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>app</groupId>
+	<artifactId>analyser</artifactId>
+	<version>1.0.1</version>
 	<name>concurrencyAnalyser</name>
 	<description>Concurrency Analyser</description>
 	<url/>
@@ -32,23 +32,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.openjdk.jol/jol-core -->
-		<dependency>
-			<groupId>org.openjdk.jol</groupId>
-			<artifactId>jol-core</artifactId>
-			<version>0.17</version>
 		</dependency>
 	</dependencies>
 
