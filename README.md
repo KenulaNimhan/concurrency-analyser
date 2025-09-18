@@ -22,13 +22,16 @@ This codebase contains two main data structures, Stack and Queue implemented usi
 
 <h1>How to Use</h1>
 
-after cloning the application user can run,
-<ul>
-<li>UseStack.java - to test the performance of all stack implementations.</li>
-<li>UseQueue.java - to test the performance of all queue implementations.</li>
-</ul>
+after cloning the application user can run Main.java,
 
-user will be prompted to enter the following configurable data,
+user will be prompted to select the strucutre they want to test,
+
+<ol>
+  <li>Stack</li>
+  <li>Queue</li>
+</ol>
+
+then user will be prompted to enter the following configurable data,
 <br>
 <ul>
   <li>Total number of elements to produce</li>
