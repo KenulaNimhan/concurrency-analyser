@@ -30,7 +30,7 @@ public class MetricComparer {
              --------------------------------------------------------------------------------------------------------
              %-20s %-15s %-20s %-25s %-15s
              
-             """, "STACK", "ERROR COUNT", "TOTAL TIME (ms)", "THROUGHPUT (ops/ms)", "AVG LATENCY (ms/ops)");
+             """, "STRUCTURE", "ERROR COUNT", "TOTAL TIME (ms)", "THROUGHPUT (ops/ms)", "AVG LATENCY (ms/ops)");
 
         for (PerformanceMetrics metric: metricsList) {
             System.out.printf("""

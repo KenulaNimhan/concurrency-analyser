@@ -9,10 +9,10 @@ public enum ConfigKey {
             new int[]{1, 5000}),
     CAP("max no. of elements the data structure can hold",
             new int[]{1, 2_500_000}),
-    ELEMENT_SIZE("size per element stacked (in bytes)",
+    ELEMENT_SIZE("size per element (in bytes)",
             new int[]{1, 2048}),
-    OPERATIONAL_SCALE("estimated CPU usage for each operation",
-            new int[]{1, 10});
+    OPERATIONAL_SCALE("estimated CPU usage for each operation (0 - 10 scale)",
+            new int[]{0, 10});
 
     private final String prompt;
     private final int[] range;

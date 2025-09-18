@@ -60,7 +60,6 @@ public class UseQueue {
         comparer.addToList(lockFreeQueueMetrics);
 
         comparer.printComparison();
-
     }
 
     private static void runThreads(Queue<Element> queue, PerformanceMetrics metrics) throws InterruptedException {
