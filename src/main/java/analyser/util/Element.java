@@ -20,18 +20,24 @@ public class Element {
         this.array = new byte[elementSize];
     }
 
-    public void compute(int scale) {
-        for (int i=0; i<scale; i++) {
-            array[i] += 1;
-        }
+    public byte[] getArray() {
+        return array;
     }
 
     public UUID getUniqueID() {
         return uniqueID;
     }
 
+    public void compute(int scale) {
+        for (int i=0; i<calculateExactComputeCount(scale); i++) array[i] += 1;
+    }
+
     @Override
     public String toString() {
         return uniqueID+" by "+createdBy;
+    }
+
+    private int calculateExactComputeCount(int scale) {
+        return (array.length * scale * 10 ) / 100;
     }
 }
