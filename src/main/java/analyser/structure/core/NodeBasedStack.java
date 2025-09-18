@@ -34,7 +34,7 @@ public class NodeBasedStack<S> implements Stack<S> {
 
     public void push(S element) {
         if (this.size() == cap) throw new IllegalStateException("cannot push. stack is full");
-        var newNode = new Node<S>(element);
+        var newNode = new Node<>(element);
         newNode.next = topNode;
         topNode = newNode;
 

@@ -3,10 +3,7 @@ package analyser.use;
 import analyser.config.Configuration;
 import analyser.config.Configurator;
 import analyser.structure.queue.Queue;
-import analyser.structure.queue.impl.BasicQueue;
-import analyser.structure.queue.impl.LockBasedQueue;
-import analyser.structure.queue.impl.NaiveSyncQueue;
-import analyser.structure.queue.impl.SyncQueue;
+import analyser.structure.queue.impl.*;
 import analyser.util.Element;
 import analyser.util.MetricComparer;
 import analyser.util.PerformanceMetrics;
@@ -23,7 +20,8 @@ public class UseQueue {
     private static final PerformanceMetrics basicQueueMetrics = new PerformanceMetrics("Basic Queue");
     private static final PerformanceMetrics naiveSyncQueueMetrics = new PerformanceMetrics("Naive Sync Queue");
     private static final PerformanceMetrics syncQueueMetrics = new PerformanceMetrics("Synchronised Queue");
-    private static final PerformanceMetrics lockQueueMetrics = new PerformanceMetrics("Lock Based Queue");
+    private static final PerformanceMetrics lockBasedQueueMetrics = new PerformanceMetrics("Lock Based Queue");
+    private static final PerformanceMetrics lockFreeQueueMetrics = new PerformanceMetrics("Lock Free Queue");
 
     private static final MetricComparer comparer = new MetricComparer();
 
@@ -45,18 +43,21 @@ public class UseQueue {
         NaiveSyncQueue<Element> basicSyncQueue = new NaiveSyncQueue<>(testData.getCap());
         SyncQueue<Element> syncQueue = new SyncQueue<>(testData.getCap());
         LockBasedQueue<Element> lockBasedQueue = new LockBasedQueue<>(testData.getCap());
+        LockFreeQueue<Element> lockFreeQueue = new LockFreeQueue<>(testData.getCap());
 
         // running the configured scenarios for each stack and collecting metrics
         runThreads(basicQueue, basicQueueMetrics);
         runThreads(basicSyncQueue, naiveSyncQueueMetrics);
         runThreads(syncQueue, syncQueueMetrics);
-        runThreads(lockBasedQueue, lockQueueMetrics);
+        runThreads(lockBasedQueue, lockBasedQueueMetrics);
+        runThreads(lockFreeQueue, lockFreeQueueMetrics);
 
         // adding all metrics to comparer
         comparer.addToList(basicQueueMetrics);
         comparer.addToList(naiveSyncQueueMetrics);
         comparer.addToList(syncQueueMetrics);
-        comparer.addToList(lockQueueMetrics);
+        comparer.addToList(lockBasedQueueMetrics);
+        comparer.addToList(lockFreeQueueMetrics);
 
         comparer.printComparison();
 
@@ -109,31 +110,31 @@ public class UseQueue {
     }
 
     private static Runnable getConsumerRunnable(int quota, Queue<Element> queue, PerformanceMetrics metrics) {
-//        if (stack instanceof TreiberStack<Element>) {
-//            return () -> {
-//                var opsBegin = System.nanoTime();
-//                int consumed = 0;
-//                while (consumed < quota) {
-//                    try {
-//                        var obj = stack.pop();
-//                        if (obj != null ) {
-//                            obj.compute(testData.getOperationalScale());
-//                            metrics.addToConsumedData(String.valueOf(obj.getUniqueID()));
-//                            metrics.incrementConsumedCount();
-//
-//                            consumed++;
-//                        } else {
-//                            Thread.yield();
-//                        }
-//                    } catch (Exception e) {
-//                        metrics.incrementErrorCount();
-//                    }
-//                }
-//                var opsEnd = System.nanoTime();
-//                var latencyForThread = (opsEnd-opsBegin) / quota;
-//                metrics.addLatency(latencyForThread);
-//            };
-//        }
+        if (queue instanceof LockFreeQueue<Element>) {
+            return () -> {
+                var opsBegin = System.nanoTime();
+                int consumed = 0;
+                while (consumed < quota) {
+                    try {
+                        var obj = queue.dequeue();
+                        if (obj != null ) {
+                            obj.compute(testData.getOperationalScale());
+                            metrics.addToConsumedData(String.valueOf(obj.getUniqueID()));
+                            metrics.incrementConsumedCount();
+
+                            consumed++;
+                        } else {
+                            Thread.yield();
+                        }
+                    } catch (Exception e) {
+                        metrics.incrementErrorCount();
+                    }
+                }
+                var opsEnd = System.nanoTime();
+                var latencyForThread = (opsEnd-opsBegin) / quota;
+                metrics.addLatency(latencyForThread);
+            };
+        }
 
         return () -> {
             var opsBegin = System.nanoTime();
