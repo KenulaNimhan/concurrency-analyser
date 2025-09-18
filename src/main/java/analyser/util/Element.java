@@ -29,15 +29,25 @@ public class Element {
     }
 
     public void compute(int scale) {
-        for (int i=0; i<calculateExactComputeCount(scale); i++) array[i] += 1;
+        int iterations = calculateExactComputeCount(scale);
+        for (int i=0; i<iterations; i++) array[i] += 1;
+        cpuWork(iterations);
+    }
+
+    private int calculateExactComputeCount(int scale) {
+        return (array.length * scale * 10 ) / 100;
+    }
+
+    private int cpuWork(int iterations) {
+        int dummy =0;
+        for (int i=0; i<iterations; i++) {
+            dummy ^= (dummy << 1) ^ 1;
+        }
+        return dummy;
     }
 
     @Override
     public String toString() {
         return uniqueID+" by "+createdBy;
-    }
-
-    private int calculateExactComputeCount(int scale) {
-        return (array.length * scale * 10 ) / 100;
     }
 }
