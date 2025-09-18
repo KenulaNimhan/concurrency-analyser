@@ -4,24 +4,15 @@ import analyser.config.Configuration;
 import analyser.config.Configurator;
 import analyser.structure.queue.Queue;
 import analyser.structure.queue.impl.*;
-import analyser.util.Element;
-import analyser.util.MetricComparer;
-import analyser.util.PerformanceMetrics;
-import analyser.util.ThreadType;
+import analyser.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class UseQueue {
     private static final Configurator configurator = new Configurator();
     private static Configuration testData = new Configuration();
 
-    private static final PerformanceMetrics basicQueueMetrics = new PerformanceMetrics("Basic Queue");
-    private static final PerformanceMetrics naiveSyncQueueMetrics = new PerformanceMetrics("Naive Sync Queue");
-    private static final PerformanceMetrics syncQueueMetrics = new PerformanceMetrics("Synchronised Queue");
-    private static final PerformanceMetrics lockBasedQueueMetrics = new PerformanceMetrics("Lock Based Queue");
-    private static final PerformanceMetrics lockFreeQueueMetrics = new PerformanceMetrics("Lock Free Queue");
+    private static final Map<QueueType, Queue<Element>> queueMetricMap = new HashMap<>();
 
     private static final MetricComparer comparer = new MetricComparer();
 
@@ -40,24 +31,26 @@ public class UseQueue {
 
         // creating stacks to test
         BasicQueue<Element> basicQueue = new BasicQueue<>(testData.getCap());
-        NaiveSyncQueue<Element> basicSyncQueue = new NaiveSyncQueue<>(testData.getCap());
+        NaiveSyncQueue<Element> naiveSyncQueue = new NaiveSyncQueue<>(testData.getCap());
         SyncQueue<Element> syncQueue = new SyncQueue<>(testData.getCap());
         LockBasedQueue<Element> lockBasedQueue = new LockBasedQueue<>(testData.getCap());
         LockFreeQueue<Element> lockFreeQueue = new LockFreeQueue<>(testData.getCap());
 
+        queueMetricMap.put(QueueType.BASIC, basicQueue);
+        queueMetricMap.put(QueueType.NAIVE_SYNC, naiveSyncQueue);
+        queueMetricMap.put(QueueType.SYNC, syncQueue);
+        queueMetricMap.put(QueueType.LOCK_BASED, lockBasedQueue);
+        queueMetricMap.put(QueueType.LOCK_FREE, lockFreeQueue);
+
         // running the configured scenarios for each stack and collecting metrics
-        runThreads(basicQueue, basicQueueMetrics);
-        runThreads(basicSyncQueue, naiveSyncQueueMetrics);
-        runThreads(syncQueue, syncQueueMetrics);
-        runThreads(lockBasedQueue, lockBasedQueueMetrics);
-        runThreads(lockFreeQueue, lockFreeQueueMetrics);
+        for (QueueType queueType: QueueType.values()) {
+            runThreads(queueMetricMap.get(queueType), queueType.getMetrics());
+        }
 
         // adding all metrics to comparer
-        comparer.addToList(basicQueueMetrics);
-        comparer.addToList(naiveSyncQueueMetrics);
-        comparer.addToList(syncQueueMetrics);
-        comparer.addToList(lockBasedQueueMetrics);
-        comparer.addToList(lockFreeQueueMetrics);
+        for (QueueType queueType: QueueType.values()) {
+            comparer.addToList(queueType.getMetrics());
+        }
 
         comparer.printComparison();
     }
