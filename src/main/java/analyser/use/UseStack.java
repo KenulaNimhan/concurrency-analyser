@@ -21,7 +21,7 @@ public class UseStack {
     private static final PerformanceMetrics naiveSyncStackMetrics = new PerformanceMetrics("Naive Sync Stack");
     private static final PerformanceMetrics syncStackMetrics = new PerformanceMetrics("Synchronised Stack");
     private static final PerformanceMetrics lockStackMetrics = new PerformanceMetrics("Lock Based Stack");
-    private static final PerformanceMetrics casStackMetrics = new PerformanceMetrics("Treiber Stack");
+    private static final PerformanceMetrics lockFreeStackMetrics = new PerformanceMetrics("Lock Free Stack");
 
     private static final MetricComparer comparer = new MetricComparer();
 
@@ -43,21 +43,21 @@ public class UseStack {
         NaiveSyncStack<Element> basicSyncStack = new NaiveSyncStack<>(testData.getCap());
         SyncStack<Element> syncStack = new SyncStack<>(testData.getCap());
         LockBasedStack<Element> lockBasedStack = new LockBasedStack<>(testData.getCap());
-        TreiberStack<Element> casStack = new TreiberStack<>(testData.getCap());
+        LockFreeStack<Element> lockFreeStack = new LockFreeStack<>(testData.getCap());
 
         // running the configured scenarios for each stack and collecting metrics
         runThreads(basicStack, basicStackMetrics);
         runThreads(basicSyncStack, naiveSyncStackMetrics);
         runThreads(syncStack, syncStackMetrics);
         runThreads(lockBasedStack, lockStackMetrics);
-        runThreads(casStack, casStackMetrics);
+        runThreads(lockFreeStack, lockFreeStackMetrics);
 
         // adding all metrics to comparer
         comparer.addToList(basicStackMetrics);
         comparer.addToList(naiveSyncStackMetrics);
         comparer.addToList(syncStackMetrics);
         comparer.addToList(lockStackMetrics);
-        comparer.addToList(casStackMetrics);
+        comparer.addToList(lockFreeStackMetrics);
 
     }
 
@@ -108,7 +108,7 @@ public class UseStack {
     }
 
     private static Runnable getConsumerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
-        if (stack instanceof TreiberStack<Element>) {
+        if (stack instanceof LockFreeStack<Element>) {
             return () -> {
                 var opsBegin = System.nanoTime();
                 int consumed = 0;

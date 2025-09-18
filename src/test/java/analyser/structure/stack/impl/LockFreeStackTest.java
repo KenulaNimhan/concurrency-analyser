@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TreiberStackTest {
+class LockFreeStackTest {
 
-    TreiberStack<Integer> underTest = new TreiberStack<>(5);
+    LockFreeStack<Integer> underTest = new LockFreeStack<>(5);
 
     @Test
     void shouldGiveCorrectSizeOfStack() throws InterruptedException {

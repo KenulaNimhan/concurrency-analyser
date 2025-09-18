@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 // uses atomic references and compare and swap technique (CAS)
 // bounded nature is achieved by using Semaphore
-public class TreiberStack<S> implements Stack<S> {
+public class LockFreeStack<S> implements Stack<S> {
 
     private static class Node<T> {
         private T val;
@@ -21,7 +21,7 @@ public class TreiberStack<S> implements Stack<S> {
     private final AtomicReference<Node<S>> topNode = new AtomicReference<>();
     private final Semaphore space;
 
-    public TreiberStack(int capacity) {
+    public LockFreeStack(int capacity) {
         this.space = new Semaphore(capacity);
     }
 
