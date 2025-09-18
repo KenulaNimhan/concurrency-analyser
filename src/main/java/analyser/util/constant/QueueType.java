@@ -1,4 +1,6 @@
-package analyser.util;
+package analyser.util.constant;
+
+import analyser.util.PerformanceMetrics;
 
 public enum QueueType {
     BASIC("Basic Queue"),

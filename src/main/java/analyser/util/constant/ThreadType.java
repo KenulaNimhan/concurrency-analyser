@@ -1,4 +1,4 @@
-package analyser.util;
+package analyser.util.constant;
 
 public enum ThreadType {
     PRODUCER,

@@ -1,33 +1,25 @@
 package analyser.use;
 
 import analyser.config.Configuration;
-import analyser.config.Configurator;
 import analyser.structure.queue.Queue;
 import analyser.structure.queue.impl.*;
 import analyser.util.*;
+import analyser.util.constant.QueueType;
+import analyser.util.constant.ThreadType;
 
 import java.util.*;
 
-public class UseQueue {
-    private static final Configurator configurator = new Configurator();
-    private static Configuration testData = new Configuration();
+public class UseQueue implements User{
 
     private static final Map<QueueType, Queue<Element>> queueMetricMap = new HashMap<>();
-
     private static final MetricComparer comparer = new MetricComparer();
+    private final Configuration testData;
 
-    public static void main(String[] args) throws InterruptedException {
+    public UseQueue(Configuration testData) {
+        this.testData = testData;
+    }
 
-        System.out.println("""
-                ---------------------------------------------------
-                    WELCOME TO CONCURRENCY PERFORMANCE ANALYSER
-                ---------------------------------------------------
-                enter -1 at any time to exit.
-                set configuration settings;
-                """);
-
-        // configuring test data
-        testData = configurator.configure();
+    public void use() throws InterruptedException {
 
         // creating stacks to test
         BasicQueue<Element> basicQueue = new BasicQueue<>(testData.getCap());
@@ -55,7 +47,7 @@ public class UseQueue {
         comparer.printComparison();
     }
 
-    private static void runThreads(Queue<Element> queue, PerformanceMetrics metrics) throws InterruptedException {
+    private void runThreads(Queue<Element> queue, PerformanceMetrics metrics) throws InterruptedException {
         // creating configured thread pools
         Thread[] producerThreads = getConfiguredThreadPool(
                 ThreadType.PRODUCER, queue,metrics);
@@ -81,7 +73,7 @@ public class UseQueue {
         System.out.println("metrics collected for "+metrics.getName());
     }
 
-    private static Runnable getProducerRunnable(int quota, Queue<Element> queue, PerformanceMetrics metrics) {
+    private Runnable getProducerRunnable(int quota, Queue<Element> queue, PerformanceMetrics metrics) {
         return () -> {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
@@ -101,7 +93,7 @@ public class UseQueue {
         };
     }
 
-    private static Runnable getConsumerRunnable(int quota, Queue<Element> queue, PerformanceMetrics metrics) {
+    private Runnable getConsumerRunnable(int quota, Queue<Element> queue, PerformanceMetrics metrics) {
         if (queue instanceof LockFreeQueue<Element>) {
             return () -> {
                 var opsBegin = System.nanoTime();
@@ -148,7 +140,7 @@ public class UseQueue {
         };
     }
 
-    private static Thread[] getConfiguredThreadPool(
+    private Thread[] getConfiguredThreadPool(
             ThreadType threadType,
             Queue<Element> queue,
             PerformanceMetrics metrics

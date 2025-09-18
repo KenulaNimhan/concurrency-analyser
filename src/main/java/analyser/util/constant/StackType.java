@@ -1,4 +1,6 @@
-package analyser.util;
+package analyser.util.constant;
+
+import analyser.util.PerformanceMetrics;
 
 public enum StackType {
     BASIC("Basic Stack"),

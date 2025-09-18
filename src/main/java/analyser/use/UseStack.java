@@ -1,33 +1,25 @@
 package analyser.use;
 
 import analyser.config.Configuration;
-import analyser.config.Configurator;
 import analyser.structure.stack.Stack;
 import analyser.structure.stack.impl.*;
 import analyser.util.*;
+import analyser.util.constant.StackType;
+import analyser.util.constant.ThreadType;
 
 import java.util.*;
 
-public class UseStack {
-    private static final Configurator configurator = new Configurator();
-    private static Configuration testData = new Configuration();
+public class UseStack implements User{
 
     private static final Map<StackType, Stack<Element>> stackMetricMap = new HashMap<>();
-
     private static final MetricComparer comparer = new MetricComparer();
+    private final Configuration testData;
 
-    public static void main(String[] args) throws InterruptedException {
+    public UseStack(Configuration testData) {
+        this.testData = testData;
+    }
 
-        System.out.println("""
-                ---------------------------------------------------
-                    WELCOME TO CONCURRENCY PERFORMANCE ANALYSER
-                ---------------------------------------------------
-                enter -1 at any time to exit.
-                set configuration settings;
-                """);
-
-        // configuring test data
-        testData = configurator.configure();
+    public void use() throws InterruptedException {
 
         // creating stacks to test
         BasicStack<Element> basicStack = new BasicStack<>(testData.getCap());
@@ -55,7 +47,7 @@ public class UseStack {
         comparer.printComparison();
     }
 
-    private static void runThreads(Stack<Element> stack, PerformanceMetrics metrics) throws InterruptedException {
+    private void runThreads(Stack<Element> stack, PerformanceMetrics metrics) throws InterruptedException {
         // creating configured thread pools
         Thread[] producerThreads = getConfiguredThreadPool(
                 ThreadType.PRODUCER, stack,metrics);
@@ -81,7 +73,7 @@ public class UseStack {
         System.out.println("metrics collected for "+metrics.getName());
     }
 
-    private static Runnable getProducerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
+    private Runnable getProducerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
         return () -> {
             var opsBegin = System.nanoTime();
             for (int i=0; i<quota; i++) {
@@ -101,7 +93,7 @@ public class UseStack {
         };
     }
 
-    private static Runnable getConsumerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
+    private Runnable getConsumerRunnable(int quota, Stack<Element> stack, PerformanceMetrics metrics) {
         if (stack instanceof LockFreeStack<Element>) {
             return () -> {
                 var opsBegin = System.nanoTime();
@@ -148,7 +140,7 @@ public class UseStack {
         };
     }
 
-    private static Thread[] getConfiguredThreadPool(
+    private Thread[] getConfiguredThreadPool(
             ThreadType threadType,
             Stack<Element> stack,
             PerformanceMetrics metrics

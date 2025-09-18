@@ -1,7 +1,7 @@
 package analyser.config;
 
 public enum ConfigKey {
-    TO_PRODUCE("how many items needed to be produced & consumed",
+    TO_PRODUCE("how many items need to be produced & consumed",
             new int[]{1, 1_000_000}),
     PRODUCER_COUNT("how many producer threads",
             new int[]{1, 100}),
