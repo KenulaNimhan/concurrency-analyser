@@ -8,7 +8,7 @@ This codebase contains two main data structures, Stack and Queue implemented usi
   <li>NaiveSyncStack - array based stack with push and pop methods synchronized.</li>
   <li>SyncStack      - thread safe array based stack with wait(), notify() methods.</li>
   <li>LockBasedStack - array based stack made thread safe using ReentrantLock and Condition.</li>
-  <li>TreiberStack   - link list based stack which uses compare and swap (CAS) technique to make operations atomic.</li>
+  <li>LockFreeStack   - link list based stack which uses compare and swap (CAS) technique to make operations atomic.</li>
 </ul>
 
 <h2>Queue</h2>
@@ -17,6 +17,7 @@ This codebase contains two main data structures, Stack and Queue implemented usi
   <li>NaiveSyncQueue - array based queue with push and pop methods synchronized.</li>
   <li>SyncQueue      - thread safe array based queue with wait(), notify() methods.</li>
   <li>LockBasedQueue - array based queue made thread safe using ReentrantLock and Condition.</li>
+  <li>LockFreeQueue - link list based queue which uses compare and swap (CAS).</li>
 </ul>
 
 <h1>How to Use</h1>
@@ -42,7 +43,7 @@ user will be prompted to enter the following configurable data,
 * This application assumes that all the produced data must be consumed.
 <br>
 <br>
-* All stack implementations are bounded, meaning they have a maximum capacity.
+* All implementations are bounded, meaning they have a maximum capacity.
 <br>
 <br>
 * The object that is being produced, and consumed is Element.java, which is a configurable object.
