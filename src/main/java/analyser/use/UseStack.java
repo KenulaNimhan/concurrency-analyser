@@ -2,26 +2,17 @@ package analyser.use;
 
 import analyser.config.Configuration;
 import analyser.config.Configurator;
-import analyser.structure.stack.*;
+import analyser.structure.stack.Stack;
 import analyser.structure.stack.impl.*;
-import analyser.util.Element;
-import analyser.util.MetricComparer;
-import analyser.util.PerformanceMetrics;
-import analyser.util.ThreadType;
+import analyser.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class UseStack {
     private static final Configurator configurator = new Configurator();
     private static Configuration testData = new Configuration();
 
-    private static final PerformanceMetrics basicStackMetrics = new PerformanceMetrics("Basic Stack");
-    private static final PerformanceMetrics naiveSyncStackMetrics = new PerformanceMetrics("Naive Sync Stack");
-    private static final PerformanceMetrics syncStackMetrics = new PerformanceMetrics("Synchronised Stack");
-    private static final PerformanceMetrics lockStackMetrics = new PerformanceMetrics("Lock Based Stack");
-    private static final PerformanceMetrics lockFreeStackMetrics = new PerformanceMetrics("Lock Free Stack");
+    private static final Map<StackType, Stack<Element>> stackMetricMap = new HashMap<>();
 
     private static final MetricComparer comparer = new MetricComparer();
 
@@ -40,25 +31,28 @@ public class UseStack {
 
         // creating stacks to test
         BasicStack<Element> basicStack = new BasicStack<>(testData.getCap());
-        NaiveSyncStack<Element> basicSyncStack = new NaiveSyncStack<>(testData.getCap());
+        NaiveSyncStack<Element> naiveSyncStack = new NaiveSyncStack<>(testData.getCap());
         SyncStack<Element> syncStack = new SyncStack<>(testData.getCap());
         LockBasedStack<Element> lockBasedStack = new LockBasedStack<>(testData.getCap());
         LockFreeStack<Element> lockFreeStack = new LockFreeStack<>(testData.getCap());
 
+        stackMetricMap.put(StackType.BASIC, basicStack);
+        stackMetricMap.put(StackType.NAIVE_SYNC, naiveSyncStack);
+        stackMetricMap.put(StackType.SYNC, syncStack);
+        stackMetricMap.put(StackType.LOCK_BASED, lockBasedStack);
+        stackMetricMap.put(StackType.LOCK_FREE, lockFreeStack);
+
         // running the configured scenarios for each stack and collecting metrics
-        runThreads(basicStack, basicStackMetrics);
-        runThreads(basicSyncStack, naiveSyncStackMetrics);
-        runThreads(syncStack, syncStackMetrics);
-        runThreads(lockBasedStack, lockStackMetrics);
-        runThreads(lockFreeStack, lockFreeStackMetrics);
+        for (StackType stackType: StackType.values()) {
+            runThreads(stackMetricMap.get(stackType), stackType.getMetrics());
+        }
 
         // adding all metrics to comparer
-        comparer.addToList(basicStackMetrics);
-        comparer.addToList(naiveSyncStackMetrics);
-        comparer.addToList(syncStackMetrics);
-        comparer.addToList(lockStackMetrics);
-        comparer.addToList(lockFreeStackMetrics);
+        for (StackType stackType: StackType.values()) {
+            comparer.addToList(stackType.getMetrics());
+        }
 
+        comparer.printComparison();
     }
 
     private static void runThreads(Stack<Element> stack, PerformanceMetrics metrics) throws InterruptedException {
