@@ -9,20 +9,13 @@ public class Configurator {
     private static final Configuration testData = new Configuration();
     private static final Scanner scan = new Scanner(System.in);
 
-    private static final Consumer<Integer> actionOfSettingToProduce = testData::setToProduce;
-    private static final Consumer<Integer> actionOfSettingProducerCount = testData::setProducerCount;
-    private static final Consumer<Integer> actionOfSettingConsumerCount = testData::setConsumerCount;
-    private static final Consumer<Integer> actionOfSettingStackCap = testData::setCap;
-    private static final Consumer<Integer> actionOfSettingElementSize = testData::setElementSize;
-    private static final Consumer<Integer> actionOfSettingOperationalScale = testData::setOperationalScale;
-
     private static final Map<ConfigKey, Consumer<Integer>> configurableActions = Map.of(
-            ConfigKey.TO_PRODUCE, actionOfSettingToProduce,
-            ConfigKey.PRODUCER_COUNT, actionOfSettingProducerCount,
-            ConfigKey.CONSUMER_COUNT, actionOfSettingConsumerCount,
-            ConfigKey.CAP, actionOfSettingStackCap,
-            ConfigKey.ELEMENT_SIZE, actionOfSettingElementSize,
-            ConfigKey.OPERATIONAL_SCALE, actionOfSettingOperationalScale
+            ConfigKey.TO_PRODUCE, testData::setToProduce,
+            ConfigKey.PRODUCER_COUNT, testData::setProducerCount,
+            ConfigKey.CONSUMER_COUNT, testData::setConsumerCount,
+            ConfigKey.CAP, testData::setCap,
+            ConfigKey.ELEMENT_SIZE, testData::setElementSize,
+            ConfigKey.OPERATIONAL_SCALE, testData::setOperationalScale
     );
 
     public Configuration configure() {
